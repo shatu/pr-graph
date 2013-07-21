@@ -21,34 +21,39 @@ public class TestHighOrderPos {
 	private static void resampleTrains(Config config, PosCorpus corpus)
 	{
 		int fsize = config.numLabels;
-		corpus.sampleFromFolderUnsorted(fsize * maxNumSampleFolds, config.seedFolder, config.holdoutFolder, new Random(12345));
+		corpus.sampleFromFolderUnsorted(fsize * maxNumSampleFolds,
+				config.seedFolder, config.holdoutFolder, new Random(12345));
 		
 		int[] newTests = new int[corpus.tests.length];
 		int[] newDevs = new int[corpus.numInstances - fsize - corpus.tests.length];
 		int[] newTrains = new int[fsize];
 		
-		for(int i = 0; i < newTests.length; i++)
+		for(int i = 0; i < newTests.length; i++) {
 			newTests[i] = corpus.tests[i];
+		}
 		
 		int dsize = 0;
-		for(int i = 0; i < corpus.devs.length; i++)
+		for(int i = 0; i < corpus.devs.length; i++) {
 			newDevs[dsize++] = corpus.devs[i];
+		}
 		
 		for(int k = 0; k < maxNumSampleFolds; k++) {
 			for(int i = 0; i < fsize; i++) {
 				int tid = k * fsize + i;
-				if(k == config.sampleFoldID) 
+				if(k == config.sampleFoldID) {
 					newTrains[i] = corpus.trains[tid];
-				else 
+				}
+				else { 
 					newDevs[dsize++] = corpus.trains[tid];
+				}
 			}
 		}
 		corpus.resetLabels(newTrains, newDevs, newTests);
 		corpus.printCrossValidationInfo();
 	}
 	
-	public static void main(String[] args) throws NumberFormatException, IOException 
-	{
+	public static void main(String[] args)
+			throws NumberFormatException, IOException {
 		PosConfig config = new PosConfig(args);
 		config.print(System.out);			
 
@@ -70,9 +75,11 @@ public class TestHighOrderPos {
 			e.printStackTrace();
 		}
 		
-		PosSOPotentialFunction potentialFunction = new PosSOPotentialFunction(corpus, config);
+		PosSOPotentialFunction potentialFunction = new PosSOPotentialFunction(
+				corpus, config);
 		AbstractFactorIterator fiter = new PrunedTagIterator(corpus);
-		SecondOrderEMTrainer trainer = new SecondOrderEMTrainer(corpus, potentialFunction, graph, fiter, config);
+		SecondOrderEMTrainer trainer = new SecondOrderEMTrainer(corpus,
+				potentialFunction, graph, fiter, config);
 	
 		trainer.trainModel();
 		
@@ -91,5 +98,4 @@ public class TestHighOrderPos {
 		mem.finish();
 		System.out.println("Memory usage:: " + mem.print());
 	}
-
 }

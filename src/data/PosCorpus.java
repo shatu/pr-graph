@@ -14,11 +14,9 @@ import config.PosConfig;
 public class PosCorpus extends AbstractCorpus {
 	
 	ArrayList<PosSequence> instances;
-	
 	// word mapping
 	ArrayList<String> index2word; 
 	TObjectIntHashMap<String> word2index;
-	
 	// tag mapping
 	ArrayList<String> index2tag;
 	TObjectIntHashMap<String> tag2index;
@@ -26,27 +24,22 @@ public class PosCorpus extends AbstractCorpus {
 	
 	public int[] umap; // tag id to universal tag id
 	public NGramMapper ngrams;
-	
 	PosConfig config;
 	public int numTokens;
 	
-	public PosCorpus(String[] corpusFiles, PosConfig config) 
-			throws NumberFormatException, IOException
-	{
+	public PosCorpus(String[] corpusFiles, PosConfig config)
+			throws NumberFormatException, IOException {
 		this.config = config;
 		RegexHelper.setLanguage(config.langName);
 
 		instances = new ArrayList<PosSequence>();
-		
 		index2word = new ArrayList<String>();
 		word2index = new TObjectIntHashMap<String>();
-		
 		index2tag = new ArrayList<String>();
 		tag2index = new TObjectIntHashMap<String>();
 	
 		maxSequenceID = 0;
 		maxSequenceLength = 0;
-		
 		numTokens = 0;
 		
 		loadTags(corpusFiles);
@@ -72,8 +65,8 @@ public class PosCorpus extends AbstractCorpus {
 				"Number of sentences: %d\n" +
 				"Number of words: %d\n" +
 				"Number of tokens: %d\n" +
-				"Number of hidden states: %d\n", instances.size(), index2word.size(), numTokens, index2tag.size()));
-		
+				"Number of hidden states: %d\n", instances.size(),
+				index2word.size(), numTokens, index2tag.size()));
 	}
 
 	public PosCorpus(String[] dataFiles, NGramMapper ngmap, PosConfig config) 
@@ -95,7 +88,8 @@ public class PosCorpus extends AbstractCorpus {
 	private void loadTags(String[] files) throws IOException {
 		for(String corpusFileName : files) {
 			String currLine;
-			BufferedReader reader = new BufferedReader(new FileReader(corpusFileName));
+			BufferedReader reader = new BufferedReader(
+					new FileReader(corpusFileName));
 			
 			while ((currLine = reader.readLine()) != null) {			
 				currLine = reader.readLine();
@@ -110,12 +104,10 @@ public class PosCorpus extends AbstractCorpus {
 	 
 			reader.close();
 		}
-		
 		System.out.println("Read " + tag2index.size() + " tags.");
 	}
 	
-	private void loadUniversalTagMap(String univTagPath) throws IOException
-	{
+	private void loadUniversalTagMap(String univTagPath) throws IOException	{
 		utag2index = new TObjectIntHashMap<String>();
 		for(int i = 0; i < UniversalTagSet.tags.length; i++) 
 			utag2index.put(UniversalTagSet.tags[i], i);
@@ -142,9 +134,7 @@ public class PosCorpus extends AbstractCorpus {
 		reader.close();
 	}
 	
-	private void remapUniversalTags()
-	{
-		System.out.println("Map gold tags to universal tags ...");
+	private void remapUniversalTags() {
 		tag2index.clear();
 		index2tag.clear();
 		
@@ -165,12 +155,12 @@ public class PosCorpus extends AbstractCorpus {
 		return instances.get(id);
 	}
 	
-	protected void loadFromFile(String corpusFileName, int foldID) throws IOException 
-	{
+	protected void loadFromFile(String corpusFileName, int foldID)
+			throws IOException {
 		String currLine;
 		BufferedReader reader = new BufferedReader(new FileReader(corpusFileName));
 		
-		while ((currLine = reader.readLine()) != null) {	
+		while ((currLine = reader.readLine()) != null) {
 			String[] wordInfo = currLine.trim().split("\t");
 			
 			currLine = reader.readLine();
@@ -187,7 +177,8 @@ public class PosCorpus extends AbstractCorpus {
 		
 			if(words.size() > 0) {
 				int seqID = instances.size();
-				PosSequence instance = new PosSequence(this, seqID, foldID, words.toNativeArray(), tags.toNativeArray());
+				PosSequence instance = new PosSequence(this, seqID, foldID, 
+						words.toNativeArray(), tags.toNativeArray());
 				instances.add(instance);
 				numTokens += instance.length;
 				
@@ -199,12 +190,10 @@ public class PosCorpus extends AbstractCorpus {
 		}
  
 		reader.close();
-
-		System.out.println("Finished Readling Corpus. Max sentence length:\t" 
-				+ maxSequenceLength);
 	}
 
-	protected int map(TObjectIntHashMap<String> node2index, ArrayList<String> index2node, String node) {
+	protected int map(TObjectIntHashMap<String> node2index,
+			ArrayList<String> index2node, String node) {
 		if(node2index.contains(node)) {
 			return node2index.get(node);
 		}
@@ -212,22 +201,20 @@ public class PosCorpus extends AbstractCorpus {
 		int idx = index2node.size();
 		index2node.add(node);
 		node2index.put(node, idx);
-		
 		return idx;
 	}
 	
-	public String getWord(int wordID)
-	{
-		return wordID >= 0 && wordID < index2word.size() ? index2word.get(wordID) : "<unk>";
+	public String getWord(int wordID) {
+		return wordID >= 0 && wordID < index2word.size() ?
+				index2word.get(wordID) : "<unk>";
 	}
 	
-	public String getTag(int tagID)
-	{
-		return tagID >= 0 && tagID < index2tag.size() ? index2tag.get(tagID) : "<unk_t>";
+	public String getTag(int tagID) {
+		return tagID >= 0 && tagID < index2tag.size() ?
+				index2tag.get(tagID) : "<unk_t>";
 	}
 	
-	public int lookupWord(String word) 
-	{
+	public int lookupWord(String word) {
 		return word2index.contains(word) ? word2index.get(word) : -1;
 	}
 	
@@ -242,5 +229,4 @@ public class PosCorpus extends AbstractCorpus {
 	public String getPrintableTag(int tagID) {
 		return getTag(tagID);
 	}
-	
 }

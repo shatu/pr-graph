@@ -1,13 +1,11 @@
 package data;
 
-import gnu.trove.TIntArrayList;
-
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Random;
+import gnu.trove.TIntArrayList;
 
 public class AbstractCorpus {
-
 	public int[] trains, devs, tests, unlabeled;
 	public int maxSequenceID, maxSequenceLength;
 	public int numStates, numTags, initialState, finalState, initialStateSO;
@@ -23,89 +21,8 @@ public class AbstractCorpus {
 		//FIXME: to implement
 	}
 	
-	public void jackknife(int numTrainFolds, int numDevFolds, int numTestFolds)
-	{
-		TIntArrayList trainIDs = new TIntArrayList();
-		TIntArrayList devIDs = new TIntArrayList();
-		TIntArrayList testIDs = new TIntArrayList();
-		
-		for(int i = 0; i < numInstances; i++) {
-			AbstractSequence instance = getInstance(i);
-			if(instance.foldID < numTrainFolds) {
-				trainIDs.add(instance.seqID);
-				instance.isLabeled = true;
-			}
-			else if(instance.foldID < numTrainFolds + numDevFolds) 
-				devIDs.add(instance.seqID);
-			else if(instance.foldID < numTrainFolds + numDevFolds + numTestFolds)
-				testIDs.add(instance.seqID);
-		}
-		
-		trains = trainIDs.toNativeArray();
-		Arrays.sort(trains);
-		
-		if(devIDs.size() > 0) {
-			devs = devIDs.toNativeArray();
-			Arrays.sort(devs);
-		}
-		
-		if(testIDs.size() > 0) {
-			tests = testIDs.toNativeArray();
-			Arrays.sort(tests);
-		}
-	}
-	
-	public void jackknifeRandom(int numTrains, int numDevs, Random sampler)
-	{
-		TIntArrayList trainIDs = new TIntArrayList();
-		TIntArrayList devIDs = new TIntArrayList();
-		TIntArrayList testIDs = new TIntArrayList();
-		
-		int tid;
-		boolean[] sampled = new boolean[numInstances];
-		for(int i = 0; i < sampled.length; i++) {
-			sampled[i] = false;
-		}
-		
-		while(trainIDs.size() < numTrains) {
-			while(sampled[tid = sampler.nextInt(numInstances)]) ;
-			trainIDs.add(tid);
-			getInstance(tid).isLabeled = true;
-			sampled[tid] = true;
-		}
-		
-		if(numDevs > 0) {
-			while(devIDs.size() < numDevs) {
-				while(sampled[tid = sampler.nextInt(numInstances)]) ;
-				devIDs.add(tid);
-				sampled[tid] = true;
-			}	
-		}
-		
-		for(int i = 0; i < numInstances; i++)
-			if(!sampled[i]) testIDs.add(i);
-		
-		trains = trainIDs.toNativeArray();
-		Arrays.sort(trains);
-		
-		if(devIDs.size() > 0) {
-			devs = devIDs.toNativeArray();
-			Arrays.sort(devs);
-		}
-		else devs = new int[0];
-		
-		if(testIDs.size() > 0) {
-			tests = testIDs.toNativeArray();
-			Arrays.sort(tests);
-		}
-		else tests = new int[0];
-
-		System.out.println("num trains: " + trains.length + "\tnum devs: " + devs.length + "\tnum tests: " + tests.length);
-	}
-	
-
-	public void sampleFromFolder(int numLabels, int seedFolder, int holdoutFolder, Random sampler)
-	{
+	public void sampleFromFolder(int numLabels, int seedFolder,
+			int holdoutFolder, Random sampler) {
 		sampleFromFolderUnsorted(numLabels, seedFolder, holdoutFolder, sampler);
 		Arrays.sort(trains);
 		Arrays.sort(devs);
@@ -113,8 +30,8 @@ public class AbstractCorpus {
 		Arrays.sort(unlabeled);
 	}
 	
-	public void sampleFromFolderUnsorted(int numLabels, int seedFolder, int holdoutFolder, Random sampler)
-	{
+	public void sampleFromFolderUnsorted(int numLabels, int seedFolder,
+			int holdoutFolder, Random sampler) {
 		TIntArrayList poolIds = new TIntArrayList();
 		TIntArrayList trainIds = new TIntArrayList();
 		TIntArrayList testIds = new TIntArrayList();
@@ -157,12 +74,12 @@ public class AbstractCorpus {
 		tests = testIds.toNativeArray();	
 		unlabeled = unlabeledIds.toNativeArray();
 		
-		System.out.println("Number of trains:\t" + trains.length + "\tdevs:\t" + devs.length + "\ttests:\t" + 
-				tests.length + "\tunlabeled:\t" + unlabeled.length);
+		System.out.println("Number of trains:\t" + trains.length + "\tdevs:\t"
+				+ devs.length + "\ttests:\t" + tests.length + "\tunlabeled:\t"
+				+ unlabeled.length);
 	}
 	
-	public void resetLabels(int[] newTrains, int[] newDevs, int[] newTests)
-	{
+	public void resetLabels(int[] newTrains, int[] newDevs, int[] newTests)	{
 		trains = new int[newTrains.length];
 		devs = new int[newDevs.length];
 		tests = new int[newTests.length];
@@ -196,34 +113,24 @@ public class AbstractCorpus {
 		Arrays.sort(devs);
 		Arrays.sort(tests);
 		Arrays.sort(unlabeled);
-		System.out.println(String.format(
-				"Reset labels with: trains (%d), devs (%d), tests (%d), unlabeled (%d)", 
-					nrTrains, nrDevs, nrTests, nrUnlabeled));
+		System.out.println(String.format("Reset labels with: trains (%d)," +
+				" devs (%d), tests (%d), unlabeled (%d)", nrTrains, nrDevs,
+				nrTests, nrUnlabeled));
 	}
 
-	public void printCrossValidationInfo()
-	{
-		
+	public void printCrossValidationInfo() {
 		System.out.print(String.format("\ntrains (%d):\t", trains.length));
-		for(int i : trains) 	
+		for(int i : trains) { 	
 			System.out.print(i + " " );
+		}
 		
 		System.out.print(String.format("\ndevs: (%d)\t",  devs.length));
-		/*
-		for(int i : devs) 	
-			System.out.print(i + " ");
-		*/
 		System.out.print(String.format("\ntests: (%d)\t",  tests.length));
-		/*
-		System.out.print("\ntests:\t");
-		for(int i : tests) 	
-			System.out.print(i + " "); */
 		
 		System.out.println();
 	}
 	
-	public String getTag(int tid)
-	{
+	public String getTag(int tid) {
 		return "";
 	}
 	
@@ -234,5 +141,4 @@ public class AbstractCorpus {
 	public String getPrintableTag(int tagID) {
 		return "";
 	}
-	
 }

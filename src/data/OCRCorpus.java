@@ -66,7 +66,6 @@ public class OCRCorpus extends AbstractCorpus {
 			
 			if(nextID < 0) {
 				instances.add(new OCRSequence(this, seqID, foldID, nodes.toNativeArray(), tags.toNativeArray()));
-			
 				maxSequenceID = Math.max(maxSequenceID, seqID + 1);
 				maxSequenceLength = Math.max(maxSequenceLength, nodes.size() + 1);
 				
@@ -97,7 +96,8 @@ public class OCRCorpus extends AbstractCorpus {
 		index2tag[this.initialStateSO = 27] = "=";
 		index2tag[this.finalState = 28] = "X";
  
-		System.out.println("Number of OCR sequences: " + instances.size() + "\tnumber of nodes: " + numNodes);
+		System.out.println("Number of OCR sequences: " + instances.size()
+				+ "\tnumber of nodes: " + numNodes);
 		reader.close();
 		
 		this.nodeFrequency = new int[numNodes];
@@ -141,7 +141,8 @@ public class OCRCorpus extends AbstractCorpus {
 	}
 
 	@Override
-	public void sampleFromFolderUnsorted(int numLabels, int seedFolder, int holdoutFolder, Random sampler) {
+	public void sampleFromFolderUnsorted(int numLabels, int seedFolder,
+			int holdoutFolder, Random sampler) {
         TIntArrayList trainIds = new TIntArrayList();
         TIntArrayList testIds = new TIntArrayList();
         TIntArrayList devIds = new TIntArrayList();
@@ -164,12 +165,12 @@ public class OCRCorpus extends AbstractCorpus {
 		int currPool = 0;
 
         while(trainIds.size() < numLabels) {
-            while(sampled[currPool][pidx = sampler.nextInt(wordPoolSize[currPool])]) ;
+            while(sampled[currPool][pidx = sampler
+            		.nextInt(wordPoolSize[currPool])]) ;
             trainIds.add(sidx = wordPool[currPool][pidx]);
 
             sampled[currPool][pidx] = true;
             getInstance(sidx).isLabeled = true;
-
 			currPool = (currPool + 1) % ocrword2index.size();
         }
 
@@ -186,8 +187,8 @@ public class OCRCorpus extends AbstractCorpus {
         tests = testIds.toNativeArray();
         unlabeled = unlabeledIds.toNativeArray();
 
-        System.out.println("Number of trains:\t" + trains.length + "\tdevs:\t" + devs.length + "\ttests:\t" +
+        System.out.println("Number of trains:\t" + trains.length +
+        		"\tdevs:\t" + devs.length + "\ttests:\t" +
                 tests.length + "\tunlabeled:\t" + unlabeled.length);
-
     }
 }

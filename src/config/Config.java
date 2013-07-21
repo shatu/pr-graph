@@ -89,8 +89,7 @@ public class Config {
 	@Option(name = "-random-seed", usage="")
 	public int randomSeed = 12345;
 	
-	public Config()
-	{
+	public Config() {
 	}
 	
 	public void print(PrintStream ostr)
@@ -99,53 +98,29 @@ public class Config {
 		ostr.println("-graph-path\t" + graphPath);
 		ostr.println("-output-path\t" + outputPath);
 		ostr.println("-num-threads\t" + numThreads);
-	
 		ostr.println("-num-labels\t" + numLabels);
-		
 		ostr.println("-label-strength\t" + labelStrength);
-		
 		ostr.println("-graph-strength\t" + graphRegularizationStrength);
-		
 		ostr.println("-gaussian-prior\t" + gaussianPrior);
-		
 		ostr.println("-backoff\t" + backoff);
-		
 		ostr.println("-estep-backoff\t" + estepBackoff);
-		
 		ostr.println("-num-em-iters\t" + numEMIters);
-		
 		ostr.println("-num-estep-iters\t" + numEstepIters);
-		
 		ostr.println("-num-mstep-iters\t" + numMstepIters);
-		
 		ostr.println("-em-stop-threshold\t" + emStopThreshold);
-		
 		ostr.println("-estep-stop-threshold\t" + estepStopThreshold);
-		
 		ostr.println("-mstep-stop-threshold\t" + mstepStopThreshold);
-		
 		ostr.println("-skip-laplacian\t" + skipLaplacian);
-		
 		ostr.println("-skip-first-estep\t" + skipFirstEstep);
-	
 		ostr.println("-estep-warmstart\t" + estepWarmstart);
-
 		ostr.println("-mstep-warmstart\t" + mstepWarmstart);
-		
 		ostr.println("-eta0\t" + initialLearningRate);
-		
 		ostr.println("-estep-uniform-init\t" + estepInit);
-	
 		ostr.println("-seed-folder\t" + seedFolder);
-		
 		ostr.println("-holdout-folder\t" + holdoutFolder);
-		
 		ostr.println("-scale-features\t" + scaleFeatures);
-		
 		ostr.println("-num-cv-folds\t" + numCVFolds);
-		
 		ostr.println("-sample-fold-id\t" + sampleFoldID);
-		
 		ostr.println("-random-seed\t" + randomSeed);
 	}
 }
