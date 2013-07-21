@@ -14,10 +14,9 @@ import config.PosConfig;
 public class PosCorpus extends AbstractCorpus {
 	
 	ArrayList<PosSequence> instances;
-	// word mapping
 	ArrayList<String> index2word; 
 	TObjectIntHashMap<String> word2index;
-	// tag mapping
+
 	ArrayList<String> index2tag;
 	TObjectIntHashMap<String> tag2index;
 	TObjectIntHashMap<String> utag2index;
@@ -27,8 +26,9 @@ public class PosCorpus extends AbstractCorpus {
 	PosConfig config;
 	public int numTokens;
 	
-	public PosCorpus(String[] corpusFiles, PosConfig config)
-			throws NumberFormatException, IOException {
+	public PosCorpus(String[] corpusFiles, NGramMapper ngmap,
+			PosConfig config) throws NumberFormatException, IOException {
+		
 		this.config = config;
 		RegexHelper.setLanguage(config.langName);
 
@@ -67,41 +67,39 @@ public class PosCorpus extends AbstractCorpus {
 				"Number of tokens: %d\n" +
 				"Number of hidden states: %d\n", instances.size(),
 				index2word.size(), numTokens, index2tag.size()));
-	}
-
-	public PosCorpus(String[] dataFiles, NGramMapper ngmap, PosConfig config) 
-			throws NumberFormatException, IOException {
-		this(dataFiles, config);
 		
+		// Load NGram mapping
 		this.ngrams = ngmap;
 		this.nodeFrequency = new int[ngmap.index2ngram.size()];
 		
 		for(PosSequence instance : instances) {
 			instance.nodes = ngmap.getNodes(this, instance);
-			for(int nid : instance.nodes)
+			for(int nid : instance.nodes) {
 				if(nid >= 0) nodeFrequency[nid] ++;
+			}
 		}
 		
 		this.numNodes = ngmap.index2ngram.size();
 	}
 	
 	private void loadTags(String[] files) throws IOException {
+		
 		for(String corpusFileName : files) {
 			String currLine;
-			BufferedReader reader = new BufferedReader(
-					new FileReader(corpusFileName));
+			BufferedReader reader = new BufferedReader(new FileReader(
+					corpusFileName));
 			
 			while ((currLine = reader.readLine()) != null) {			
 				currLine = reader.readLine();
 				if(currLine == null) break;
 				String[] tagInfo = currLine.trim().split("\t");	
-				for(String tag : tagInfo) 
+				for(String tag : tagInfo) {
 					map(tag2index, index2tag, tag.trim());
+				}
 			
 				reader.readLine(); // skip dependency info
 				reader.readLine(); // skip empty line
 			}
-	 
 			reader.close();
 		}
 		System.out.println("Read " + tag2index.size() + " tags.");
@@ -109,8 +107,9 @@ public class PosCorpus extends AbstractCorpus {
 	
 	private void loadUniversalTagMap(String univTagPath) throws IOException	{
 		utag2index = new TObjectIntHashMap<String>();
-		for(int i = 0; i < UniversalTagSet.tags.length; i++) 
+		for(int i = 0; i < UniversalTagSet.tags.length; i++) { 
 			utag2index.put(UniversalTagSet.tags[i], i);
+		}
 	
 		umap = new int[index2tag.size()];
 		Arrays.fill(umap, -1);
@@ -127,10 +126,11 @@ public class PosCorpus extends AbstractCorpus {
 			umap[tag2index.get(t)] = utag2index.get(ut);
 		}
 		
-		for(int i = 0; i < index2tag.size(); i++) 
-			if(umap[i] < 0) 
+		for(int i = 0; i < index2tag.size(); i++) { 
+			if(umap[i] < 0) { 
 				umap[i] = utag2index.get("X");
- 
+			}
+		}
 		reader.close();
 	}
 	

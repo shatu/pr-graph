@@ -12,7 +12,6 @@ public class RegexHelper {
 	
 	public static boolean isNumerical(String token)
 	{
-		//return token.trim().matches("[0-9]+|[0-9]+\\.[0-9]+|[0-9]+[0-9,]+|[0-9]+\\\\/[0-9]+");
 		return token.trim().matches("[0-9]+|[0-9]+\\.[0-9]+|[0-9]+[0-9,]+");
 	}
 	
@@ -26,6 +25,5 @@ public class RegexHelper {
 		}
 		else 
 			return token.matches("[.,!?:;]+");
-		//return token.matches("[.,!?:;()\"/\\[\\]`'«-]+");
 	}
 }

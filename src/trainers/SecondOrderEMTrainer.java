@@ -1,9 +1,7 @@
 package trainers;
 
 import java.util.Arrays;
-
 import analysis.GeneralTimer;
-import analysis.PredictionAnalyzer;
 import models.AbstractFactorIterator;
 import models.SecondOrderFactorGraph;
 import config.Config;
@@ -22,9 +20,8 @@ import data.AbstractSequence;
 import data.SparseSimilarityGraph;
 import features.SecondOrderPotentialFunction;
 
-
-public class SecondOrderEMTrainer 
-{
+public class SecondOrderEMTrainer {
+	
 	AbstractCorpus corpus;
 	SecondOrderPotentialFunction potentialFunction;
 	AbstractFactorIterator fiter;
@@ -38,7 +35,7 @@ public class SecondOrderEMTrainer
 	double[] empiricalCounts, expectedCounts, softEmpiricalCounts;
 
 	Config config;
-	boolean transductive, doAnalysis;
+	boolean transductive;
 	int currIter;
 	public double trainAcc, devAcc, testAcc;
 	
@@ -48,8 +45,7 @@ public class SecondOrderEMTrainer
 	Optimizer optimizer;
 	OptimizerStats stats;
 	double prevStepSize;
-	
-	PredictionAnalyzer analyzer;
+
 	GeneralTimer timer;
 	
 	public SecondOrderEMTrainer(AbstractCorpus corpus, SecondOrderPotentialFunction potentialFunction, 
@@ -85,7 +81,6 @@ public class SecondOrderEMTrainer
 			}
 		}
 		timer = new GeneralTimer();
-		analyzer = new PredictionAnalyzer(corpus);
 	}
 	
 	
@@ -160,7 +155,6 @@ public class SecondOrderEMTrainer
 		initializeModel();
 		
 		transductive = false;
-		doAnalysis = false;
 		boolean success = false;
 		double prevObjective = Double.POSITIVE_INFINITY;
 		double prevTime = 1e-6 * System.currentTimeMillis();
@@ -190,13 +184,14 @@ public class SecondOrderEMTrainer
 			prevObjective = currObjective;
 			prevTime = currTime;
 		
-			System.out.print("*** Training:\t");	trainAcc = testModel(corpus.trains);
-			System.out.print("*** Devs:\t");		devAcc = testModel(corpus.devs);
-			System.out.print("*** Testing:\t");		testAcc = testModel(corpus.tests);
+			System.out.print("*** Training:\t");
+			trainAcc = testModel(corpus.trains);
+			System.out.print("*** Testing:\t");
+			testAcc = testModel(corpus.tests);
 
 			if(currIter == 0) {
 				System.out.print("*** CRF Baseline:\t");
-				testAndAnalyze(corpus.unlabeled, "crf-baseline");
+				testAndAnalyze(corpus.tests, "crf-baseline");
 			}
 		}
 
@@ -206,7 +201,7 @@ public class SecondOrderEMTrainer
 	public double testModel(int[] instanceIDs) {
 		SentenceMonitorThread[] threads = new SentenceMonitorThread[config.numThreads];
 		double tokenAccuracy = .0, sequenceAccuracy = .0, tokenNorm = .0;
-		doAnalysis = false;
+
 		try {
 			for(int i = 0; i < threads.length; i++) {
 				threads[i] = new SentenceMonitorThread(i, threads.length, instanceIDs);
@@ -224,8 +219,10 @@ public class SecondOrderEMTrainer
 		}
 		
 		tokenAccuracy /= tokenNorm;
-		System.out.print(String.format("token acc.\t%.3f%%", 100.0 * tokenAccuracy));
-		System.out.println(String.format("\tsequence acc.\t%.3f%%", 100.0 * sequenceAccuracy / instanceIDs.length));
+		System.out.print(String.format("token acc.\t%.3f%%",
+				100.0 * tokenAccuracy));
+		System.out.println(String.format("\tsequence acc.\t%.3f%%",
+				100.0 * sequenceAccuracy / instanceIDs.length));
 		
 		return tokenAccuracy;
 	}
@@ -233,7 +230,7 @@ public class SecondOrderEMTrainer
 	public double testAndAnalyze(int[] instanceIDs, String outputFileLabel) {
 		SentenceMonitorThread[] threads = new SentenceMonitorThread[config.numThreads];
 		double tokenAccuracy = .0, sequenceAccuracy = .0, tokenNorm = .0;
-		doAnalysis = true;
+
 		try {
 			for(int i = 0; i < threads.length; i++) {
 				threads[i] = new SentenceMonitorThread(i, threads.length, instanceIDs);
@@ -249,16 +246,12 @@ public class SecondOrderEMTrainer
 			
 			tokenAccuracy /= tokenNorm;
 			System.out.print(String.format("token acc.\t%.3f%%", 100.0 * tokenAccuracy));
-			System.out.println(String.format("\tsequence acc.\t%.3f%%", 100.0 * sequenceAccuracy / instanceIDs.length));
-			
-			analyzer.output(config.outputPath + "-" + outputFileLabel + ".out");
-			
+			System.out.println(String.format("\tsequence acc.\t%.3f%%",
+					100.0 * sequenceAccuracy / instanceIDs.length));
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		doAnalysis = false;
-		
 		return tokenAccuracy;
 	}
 	
@@ -455,9 +448,6 @@ public class SecondOrderEMTrainer
 				model.computeMarginals();
 				
 				double acc = model.decodeAndEvaluate(instance.tags);
-				if(doAnalysis) {
-					analyzer.put(instance, model);
-				}
 				numTokens += instance.length;
 				numCorrectTokens += acc;
 				numCorrectSequences += (acc == instance.length ? 1 : 0);

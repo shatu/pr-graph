@@ -4,7 +4,7 @@ public class AbstractSequence {
 
 	public int seqID, foldID, length;
 	public int[] tags, tokens, nodes; 
-	public boolean isLabeled, isHeldout;
+	public boolean isLabeled;
 	
 	public AbstractSequence(int seqID, int foldID, int[] tokens, int[] tags)
 	{
@@ -15,12 +15,14 @@ public class AbstractSequence {
 		this.length = tags.length;
 		
 		nodes = new int[length];
-		for(int i = 0; i < length; i++)
+		for(int i = 0; i < length; i++) {
 			nodes[i] = tokens[i];
+		}
 		
 		this.isLabeled = false;
-		this.isHeldout = false;
 	}
 
-	public void print() { }	
+	public void print() { 
+		// TODO
+	}	
 }

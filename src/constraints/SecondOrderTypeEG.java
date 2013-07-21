@@ -41,16 +41,17 @@ public class SecondOrderTypeEG {
 	EmpiricalCountThread[] ethreads;
 
 	public double lpStrength;
-	public double entropyObjective, likelihoodObjective, graphObjective, objective, gradientNorm, objChange;
+	public double entropyObjective, likelihoodObjective, graphObjective,
+		objective, gradientNorm, objChange;
 	public double[] softEmpiricalCounts;
 	
 	double stoppingCriteria;
 	double goldViolation;
 	double prevObjective;
 	
-	public SecondOrderTypeEG(AbstractCorpus corpus, SparseSimilarityGraph graph, SecondOrderPotentialFunction ffunc, 
-			AbstractFactorIterator fiter, Config config)
-	{
+	public SecondOrderTypeEG(AbstractCorpus corpus, SparseSimilarityGraph graph,
+			SecondOrderPotentialFunction ffunc, AbstractFactorIterator fiter,
+			Config config) {
 		this.corpus = corpus;
 		this.graph = graph;
 		this.ffunc = ffunc;
@@ -90,7 +91,7 @@ public class SecondOrderTypeEG {
 		primalVars = new double[numFeatures];
 		softEmpiricalCounts = new double[numFeatures];
 		
-		unlabeled = corpus.unlabeled;
+		unlabeled = corpus.tests;
 		numUnlabeled = unlabeled.length;
 		System.out.println("EG projection on " + numUnlabeled + " instances.");
 		
@@ -138,12 +139,13 @@ public class SecondOrderTypeEG {
 			System.out.println(String.format("Resetting objective: %.4f -> %.4f", objective, prevObjective));
 			
 			SecondOrderFactorGraph model = new SecondOrderFactorGraph(corpus, ffunc, fiter);
-			for(int sid : corpus.unlabeled) {
+			for(int sid : unlabeled) {
 				AbstractSequence instance = corpus.getInstance(sid);
 				model.computeScores(instance, theta, config.backoff);	
 				for(int i = 0; i <= instance.length; i++)
-					for(int s : fiter.states(sid, i)) 
+					for(int s : fiter.states(sid, i)) {
 						mstepNodeScore[sid][i][s] = model.nodeScore[i][s];
+					}
 			}
 			System.out.println("Cached node scores.");
 		}

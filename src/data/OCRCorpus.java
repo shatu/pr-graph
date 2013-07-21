@@ -10,18 +10,16 @@ import java.util.HashMap;
 import java.util.Random;
 
 public class OCRCorpus extends AbstractCorpus {
-	
 	ArrayList<OCRSequence> instances;
 	ArrayList<int[]> index2word;
 	String[] index2tag;
-
 	HashMap<String, Integer> ocrword2index;
 	int[]  wordPoolSize;
 	int[][] wordPool;
 
 	public OCRCorpus(String corpusFileName, int maxNumNodes) throws 
-		NumberFormatException, IOException
-	{
+		NumberFormatException, IOException {
+		
 		String currLine;
 		BufferedReader reader = new BufferedReader(new FileReader(corpusFileName));
 	
@@ -41,7 +39,6 @@ public class OCRCorpus extends AbstractCorpus {
 		String ocrword = "";
 
 		while ((currLine = reader.readLine()) != null) {
-			
 			String[] info = currLine.trim().split("\t");
 			
 			int nodeID = Integer.parseInt(info[0]) - 1;
@@ -65,18 +62,21 @@ public class OCRCorpus extends AbstractCorpus {
 			ocrword += letter;
 			
 			if(nextID < 0) {
-				instances.add(new OCRSequence(this, seqID, foldID, nodes.toNativeArray(), tags.toNativeArray()));
+				instances.add(new OCRSequence(this, seqID, foldID,
+						nodes.toNativeArray(), tags.toNativeArray()));
 				maxSequenceID = Math.max(maxSequenceID, seqID + 1);
 				maxSequenceLength = Math.max(maxSequenceLength, nodes.size() + 1);
 				
-				if(nodes.size() >= maxNumNodes)
+				if(nodes.size() >= maxNumNodes) {
 					break;
+				}
 				
 				nodes.clear();
 				tags.clear();
 
-				if(foldID == 0)
+				if(foldID == 0) {
 					addToWordPool(ocrword, seqID);
+				}
 
 				ocrword = "";
 			}
@@ -89,9 +89,9 @@ public class OCRCorpus extends AbstractCorpus {
 		this.numWords = numNodes;
 		
 		index2tag = new String[numStates];
-		for(int i = 0; i < 26; i++)
+		for(int i = 0; i < 26; i++) {
 			index2tag[i] = Character.toString((char) ('a' + i));
-		
+		}
 		index2tag[this.initialState = 26] = "-";
 		index2tag[this.initialStateSO = 27] = "=";
 		index2tag[this.finalState = 28] = "X";
@@ -102,19 +102,18 @@ public class OCRCorpus extends AbstractCorpus {
 		
 		this.nodeFrequency = new int[numNodes];
 		Arrays.fill(nodeFrequency, 1);
-
 		System.out.println("read " + ocrword2index.size() + " distince words");
 	}
 	
 	private void addToWordPool(String word, int seqID) {
 		int wid = -1;
-		if(ocrword2index.containsKey(word)) 
+		if(ocrword2index.containsKey(word)) { 
 			wid = ocrword2index.get(word);
+		}
 		else {
 			wid = ocrword2index.size();
 			ocrword2index.put(word, wid);
 		}
-	
 		wordPool[wid][wordPoolSize[wid]++] = seqID;
 	}
 	
@@ -134,41 +133,34 @@ public class OCRCorpus extends AbstractCorpus {
 	public String getTagSequence(int seqID) {
 		int[] tags = instances.get(seqID).tags;
 		String tagSeq = "";
-		for(int t : tags)
+		for(int t : tags) {
 			tagSeq += (char) ('a' + t);
+		}
 
 		return tagSeq;	
 	}
 
 	@Override
 	public void sampleFromFolderUnsorted(int numLabels, int seedFolder,
-			int holdoutFolder, Random sampler) {
+			Random sampler) {
         TIntArrayList trainIds = new TIntArrayList();
         TIntArrayList testIds = new TIntArrayList();
-        TIntArrayList devIds = new TIntArrayList();
-        TIntArrayList unlabeledIds = new TIntArrayList();
-
-        for(int i = 0; i < numInstances; i++) {
-            int fid = getInstance(i).foldID;
-            if(fid == holdoutFolder) {
-                testIds.add(i);
-                getInstance(i).isHeldout = true;
-            }
-        }
 
         boolean[][] sampled = new boolean[wordPool.length][wordPool[0].length];
-        for(int i = 0; i < sampled.length; i++)
-			for(int j = 0; j < sampled[i].length; j++)
+        for(int i = 0; i < sampled.length; i++) {
+			for(int j = 0; j < sampled[i].length; j++) {
 	            sampled[i][j] = false;
+			}
+        }
 
-        int pidx, sidx;
-		int currPool = 0;
+        int pidx, sidx, currPool = 0;
 
         while(trainIds.size() < numLabels) {
             while(sampled[currPool][pidx = sampler
-            		.nextInt(wordPoolSize[currPool])]) ;
+            		.nextInt(wordPoolSize[currPool])]) {
+            	// Do nothing
+            }
             trainIds.add(sidx = wordPool[currPool][pidx]);
-
             sampled[currPool][pidx] = true;
             getInstance(sidx).isLabeled = true;
 			currPool = (currPool + 1) % ocrword2index.size();
@@ -176,19 +168,13 @@ public class OCRCorpus extends AbstractCorpus {
 
         for(int i = 0; i < numInstances; i++) {
             if(!getInstance(i).isLabeled) {
-                unlabeledIds.add(i);
-                if(!getInstance(i).isHeldout)
-                    devIds.add(i);
+                testIds.add(i);
             }
         }
 
         trains = trainIds.toNativeArray();
-        devs = devIds.toNativeArray();
         tests = testIds.toNativeArray();
-        unlabeled = unlabeledIds.toNativeArray();
-
         System.out.println("Number of trains:\t" + trains.length +
-        		"\tdevs:\t" + devs.length + "\ttests:\t" +
-                tests.length + "\tunlabeled:\t" + unlabeled.length);
+				"\ttests:\t" + tests.length);
     }
 }

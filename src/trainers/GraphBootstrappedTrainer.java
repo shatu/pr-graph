@@ -1,12 +1,8 @@
 package trainers;
 
-import java.io.IOException;
 import java.util.Arrays;
-
 import analysis.GeneralTimer;
 import analysis.GraphPropagationTester;
-import analysis.PredictionAnalyzer;
-
 import models.AbstractFactorIterator;
 import models.SecondOrderFactorGraph;
 import config.Config;
@@ -24,8 +20,7 @@ import data.SparseSimilarityGraph;
 import features.SecondOrderPotentialFunction;
 
 
-public class GraphBootstrappedTrainer 
-{
+public class GraphBootstrappedTrainer {
 	AbstractCorpus corpus;
 	SecondOrderPotentialFunction potentialFunction;
 	AbstractFactorIterator fiter;
@@ -53,13 +48,12 @@ public class GraphBootstrappedTrainer
 	double prevStepSize;
 	
 	GeneralTimer timer;
-	PredictionAnalyzer analyzer;
-	
 	int[][] hardDecoding;
 	
-	public GraphBootstrappedTrainer(AbstractCorpus corpus, SecondOrderPotentialFunction potentialFunction, 
-			SparseSimilarityGraph graph, AbstractFactorIterator fiter, Config config)
-	{
+	public GraphBootstrappedTrainer(AbstractCorpus corpus,
+			SecondOrderPotentialFunction potentialFunction,
+			SparseSimilarityGraph graph, AbstractFactorIterator fiter,
+			Config config) {
 		this.corpus = corpus;
 		this.potentialFunction = potentialFunction;
 		this.fiter = fiter;
@@ -86,7 +80,8 @@ public class GraphBootstrappedTrainer
 		Arrays.fill(empiricalCounts, 0.0);
 		model = new SecondOrderFactorGraph(corpus, potentialFunction, fiter);
 		if(!config.skipLaplacian) {
-			constraint = new SecondOrderTypeEG(corpus, graph, potentialFunction, fiter, config);
+			constraint = new SecondOrderTypeEG(corpus, graph, potentialFunction,
+					fiter, config);
 		}
 		
 		double nrLabeledTokens = 0, nrUnlabeledTokens = 0;
@@ -101,12 +96,12 @@ public class GraphBootstrappedTrainer
 		
 		unlabeledDiscount = nrUnlabeledTokens / nrLabeledTokens;
 		labeledStrength = config.labelStrength;
-		System.out.println("Number of labeled tokens:\t" + nrLabeledTokens + "\tUnlabeled:\t" + nrUnlabeledTokens
-				+ "\tUnlabeled discount factor:\t" + unlabeledDiscount);
+		System.out.println("Number of labeled tokens:\t" + nrLabeledTokens +
+				"\tUnlabeled:\t" + nrUnlabeledTokens +
+				"\tUnlabeled discount factor:\t" + unlabeledDiscount);
 		System.out.println("Labeled strength:\t" + labeledStrength);
 		
 		timer = new GeneralTimer();
-		analyzer = new PredictionAnalyzer(corpus);
 	}
 	
 	
@@ -120,7 +115,8 @@ public class GraphBootstrappedTrainer
 		}
 		
 		lineSearch = new WolfRuleLineSearch(new InterpolationPickFirstStep(
-							config.mstepWarmstart ?	prevStepSize : 1.0), 1e-4, 0.9, 10);
+							config.mstepWarmstart ?	prevStepSize : 1.0),
+							1e-4, 0.9, 10);
 		lineSearch.setDebugLevel(0);
 	
 		stopping = new CompositeStopingCriteria();
@@ -129,21 +125,23 @@ public class GraphBootstrappedTrainer
 		optimizer = new LBFGS(lineSearch, 10);
 		optimizer.setMaxIterations(config.numMstepIters);
 		stats = new OptimizerStats();
-		//}
 		
 		mstepObjective = new MStepObjective(theta, transductive); 
 		boolean succeed = optimizer.optimize(mstepObjective, stats, stopping);
 		prevStepSize = optimizer.getCurrentStep();
-		System.out.println("success:\t" + succeed + "\twith latest stepsize:\t" + prevStepSize);
+		System.out.println("success:\t" + succeed +
+				"\twith latest stepsize:\t" + prevStepSize);
 	
 		
 		double obj = mstepObjective.objective;
-		if(constraint != null) obj += constraint.lpStrength / 2 * constraint.graphObjective 
-											- constraint.entropyObjective;
+		if(constraint != null) obj += constraint.lpStrength / 2 *
+				constraint.graphObjective  - constraint.entropyObjective;
 				
 		System.out.println("After M-step of iteration::\t" + currIter);
-		System.out.println("Negative Labeled Likelihood::\t" + mstepObjective.labelLikelihood);
-		System.out.println("Negative Unlabeled Likelihood::\t" + mstepObjective.softLikelihood);
+		System.out.println("Negative Labeled Likelihood::\t" +
+				mstepObjective.labelLikelihood);
+		System.out.println("Negative Unlabeled Likelihood::\t" +
+				mstepObjective.softLikelihood);
 		System.out.println("*** Combined objective::\t" + obj);
 		
 		timer.stamp("mstep-end");
@@ -163,12 +161,15 @@ public class GraphBootstrappedTrainer
         }
 
         double obj = constraint.objective;
-        if(mstepObjective != null)
-            obj += labeledStrength * mstepObjective.labelLikelihood + mstepObjective.parameterRegularizer;
+        if(mstepObjective != null) {
+            obj += labeledStrength * mstepObjective.labelLikelihood +
+            	mstepObjective.parameterRegularizer;
+        }
 
         System.out.println("After E-step of iteration::\t" + currIter);
         System.out.println("Entropy of Q::\t" + constraint.entropyObjective);
-        System.out.println("Negative Unlabeled Likelihood::\t" + constraint.likelihoodObjective);
+        System.out.println("Negative Unlabeled Likelihood::\t" +
+        		constraint.likelihoodObjective);
         System.out.println("Graph Violation::\t" + constraint.graphObjective);
         System.out.println("*** Combined objective::\t" + obj);
 
@@ -204,13 +205,7 @@ public class GraphBootstrappedTrainer
 			}
 			model.addToEmpirical(sid, hardDecoding[sid], softEmpiricalCounts);
 		}
-		
-		try {
-			analyzer.output(config.outputPath + "-gp.out", hardDecoding);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
+	
 		for(currIter = 0; currIter < config.numEMIters && !success; currIter++) {
 			System.out.println("Iteration:: " + currIter);
 		
@@ -226,39 +221,27 @@ public class GraphBootstrappedTrainer
 			prevObjective = currObjective;
 			prevTime = currTime;
 		
-			System.out.print("*** Training:\t");
-			trainAcc = testModel(corpus.trains);
-			System.out.print("*** Devs:\t");
-			devAcc = testModel(corpus.devs);
-			System.out.print("*** Testing:\t");
-			testAcc = testModel(corpus.tests);
-
 			if(currIter == 0) {
 				System.out.print("*** CRF Baseline:\t");
-				testModel(corpus.unlabeled);
 			}
+			System.out.print("*** Training:\t");
+			trainAcc = testModel(corpus.trains);
+			System.out.print("*** Testing:\t");
+			testAcc = testModel(corpus.tests);
 		}
 
 		System.out.println("EM Success:\t" + success);
-		/*
-		try {
-			posteriorPrinter.output(new PrintStream(new File("ocr-posterior-500lb.out")));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		*/
 	}
 	
-	// FIXME: check if it's doing the right thing
-	public double testModel(int[] instanceIDs)
-	{
-		SentenceMonitorThread[] threads = new SentenceMonitorThread[config.numThreads];
+	public double testModel(int[] instanceIDs) {
+		SentenceMonitorThread[] threads =
+				new SentenceMonitorThread[config.numThreads];
 		double tokenAccuracy = .0, sequenceAccuracy = .0, tokenNorm = .0;
 		
 		try {
 			for(int i = 0; i < threads.length; i++) {
-				threads[i] = new SentenceMonitorThread(i, threads.length, instanceIDs);
-				//threads[i].printMyself();
+				threads[i] = new SentenceMonitorThread(i, threads.length,
+						instanceIDs);
 				threads[i].start();
 			}
 			
@@ -275,13 +258,13 @@ public class GraphBootstrappedTrainer
 		
 		tokenAccuracy /= tokenNorm;
 		System.out.print(String.format("token acc.\t%.3f%%", 100.0 * tokenAccuracy));
-		System.out.println(String.format("\tsequence acc.\t%.3f%%", 100.0 * sequenceAccuracy / instanceIDs.length));
+		System.out.println(String.format("\tsequence acc.\t%.3f%%",
+				100.0 * sequenceAccuracy / instanceIDs.length));
 		
 		return tokenAccuracy;
 	}
 	
-	private double twoNormSquared(double[] x)
-	{
+	private double twoNormSquared(double[] x) {
 		double norm = .0;
 		for(double v : x) norm += v * v;
 		return norm;
@@ -305,11 +288,10 @@ public class GraphBootstrappedTrainer
 			}	
 			
 			tokenAccuracy /= tokenNorm;
-			System.out.print(String.format("token acc.\t%.3f%%", 100.0 * tokenAccuracy));
-			System.out.println(String.format("\tsequence acc.\t%.3f%%", 100.0 * sequenceAccuracy / instanceIDs.length));
-			
-			analyzer.output(config.outputPath + "-" + outputFileLabel + ".out");
-			
+			System.out.print(String.format("token acc.\t%.3f%%",
+					100.0 * tokenAccuracy));
+			System.out.println(String.format("\tsequence acc.\t%.3f%%",
+					100.0 * sequenceAccuracy / instanceIDs.length));	
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -379,14 +361,10 @@ public class GraphBootstrappedTrainer
 				threads[i] = null;
 			}
 
-			//System.out.println("#updates:\t" + ++ numThetaUpdates);			
 			if(updateCalls % 10 == 0) {
 				System.out.println("iteration:: " + updateCalls);
-				System.out.println("objective:: " + objective + "\tlabeled:: " + labelLikelihood + "\tunlabeled:: " + softLikelihood);
-				//System.out.println("gradient norm:: " + twoNormSquared(gradient));
-				//System.out.println("parameter norm:: " + twoNormSquared(parameters));
-				//System.out.print("dev-acc:\t");
-				//testModel(corpus.devs);
+				System.out.println("objective:: " + objective + "\tlabeled:: " +
+						labelLikelihood + "\tunlabeled:: " + softLikelihood);
 			}
 		}
 		
@@ -474,8 +452,8 @@ public class GraphBootstrappedTrainer
 
 	}
 	
-	synchronized void printPredictedIntance(AbstractCorpus corpus, AbstractSequence instance, int[] prediction)
-	{
+	synchronized void printPredictedIntance(AbstractCorpus corpus,
+			AbstractSequence instance, int[] prediction) {
 		for(int i = 0; i < instance.length; i++)
 			System.out.print(corpus.getPrintableWord(instance.tokens[i]) + "\t");
 		System.out.println();

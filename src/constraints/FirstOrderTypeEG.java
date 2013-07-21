@@ -92,7 +92,7 @@ public class FirstOrderTypeEG {
 		
 		softEmpiricalCounts = new double[numFeatures];
 		
-		unlabeled = corpus.unlabeled;
+		unlabeled = corpus.tests;
 		numUnlabeled = unlabeled.length;
 		System.out.println("EG projection on " + numUnlabeled + " instances.");
 		
@@ -137,8 +137,9 @@ public class FirstOrderTypeEG {
 			updateObjective();
 		}
 		else {
-			FirstOrderFactorGraph model = new FirstOrderFactorGraph(corpus, ffunc, fiter);
-			for(int sid : corpus.unlabeled) {
+			FirstOrderFactorGraph model = new FirstOrderFactorGraph(corpus,
+					ffunc, fiter);
+			for(int sid : unlabeled) {
 				AbstractSequence instance = corpus.getInstance(sid);
 				model.computeScores(instance, theta, config.backoff);	
 				for(int i = 0; i <= instance.length; i++)

@@ -74,9 +74,6 @@ public class Config {
 	@Option(name = "-seed-folder", usage="")
 	public int seedFolder = 0;
 	
-	@Option(name = "-holdout-folder", usage="")
-	public int holdoutFolder = 1;
-	
 	@Option(name = "-scale-features", usage="")
 	public boolean scaleFeatures;
 	
@@ -117,7 +114,6 @@ public class Config {
 		ostr.println("-eta0\t" + initialLearningRate);
 		ostr.println("-estep-uniform-init\t" + estepInit);
 		ostr.println("-seed-folder\t" + seedFolder);
-		ostr.println("-holdout-folder\t" + holdoutFolder);
 		ostr.println("-scale-features\t" + scaleFeatures);
 		ostr.println("-num-cv-folds\t" + numCVFolds);
 		ostr.println("-sample-fold-id\t" + sampleFoldID);

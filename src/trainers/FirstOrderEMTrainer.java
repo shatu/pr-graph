@@ -47,9 +47,10 @@ public class FirstOrderEMTrainer
 	
 	GeneralTimer timer;
 	
-	public FirstOrderEMTrainer(AbstractCorpus corpus, FirstOrderPotentialFunction potentialFunction, 
-			SparseSimilarityGraph graph, AbstractFactorIterator fiter, Config config)
-	{
+	public FirstOrderEMTrainer(AbstractCorpus corpus,
+			FirstOrderPotentialFunction potentialFunction, 
+			SparseSimilarityGraph graph, AbstractFactorIterator fiter,
+			Config config) {
 		this.corpus = corpus;
 		this.potentialFunction = potentialFunction;
 		this.fiter = fiter;
@@ -179,17 +180,13 @@ public class FirstOrderEMTrainer
 			prevObjective = currObjective;
 			prevTime = currTime;
 			
-			System.out.print("*** Training:\t");
-			trainAcc = testModel(corpus.trains);
-			System.out.print("*** Devs:\t");
-			devAcc = testModel(corpus.devs);
-			System.out.print("*** Testing:\t");
-			testAcc = testModel(corpus.tests);
-
 			if(currIter == 0) {
 				System.out.print("*** CRF Baseline:\t");
-				testAndAnalyze(corpus.unlabeled, "crf-baseline");
 			}
+			System.out.print("*** Training:\t");
+			trainAcc = testModel(corpus.trains);
+			System.out.print("*** Testing:\t");
+			testAcc = testModel(corpus.tests);
 		}
 
 		System.out.println("EM Success:\t" + success);
@@ -217,7 +214,8 @@ public class FirstOrderEMTrainer
 		
 		tokenAccuracy /= tokenNorm;
 		System.out.print(String.format("token acc.\t%.3f%%", 100.0 * tokenAccuracy));
-		System.out.println(String.format("\tsequence acc.\t%.3f%%", 100.0 * sequenceAccuracy / instanceIDs.length));
+		System.out.println(String.format("\tsequence acc.\t%.3f%%",
+				100.0 * sequenceAccuracy / instanceIDs.length));
 		
 		return tokenAccuracy;
 	}
@@ -240,8 +238,10 @@ public class FirstOrderEMTrainer
 			}	
 			
 			tokenAccuracy /= tokenNorm;
-			System.out.print(String.format("token acc.\t%.3f%%", 100.0 * tokenAccuracy));
-			System.out.println(String.format("\tsequence acc.\t%.3f%%", 100.0 * sequenceAccuracy / instanceIDs.length));
+			System.out.print(String.format("token acc.\t%.3f%%",
+					100.0 * tokenAccuracy));
+			System.out.println(String.format("\tsequence acc.\t%.3f%%",
+					100.0 * sequenceAccuracy / instanceIDs.length));
 	
 		} catch (Exception e) {
 			e.printStackTrace();
