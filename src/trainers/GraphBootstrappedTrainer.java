@@ -79,10 +79,8 @@ public class GraphBootstrappedTrainer {
 		
 		Arrays.fill(empiricalCounts, 0.0);
 		model = new SecondOrderFactorGraph(corpus, potentialFunction, fiter);
-		if(!config.skipLaplacian) {
-			constraint = new SecondOrderTypeEG(corpus, graph, potentialFunction,
-					fiter, config);
-		}
+		constraint = new SecondOrderTypeEG(corpus, graph, potentialFunction,
+				fiter, config);
 		
 		double nrLabeledTokens = 0, nrUnlabeledTokens = 0;
 		for(int tid = 0; tid < corpus.numInstances; tid++) {
@@ -110,13 +108,8 @@ public class GraphBootstrappedTrainer {
 		System.out.println("Corpus M Step");
 		timer.stamp("mstep-start");
 		
-		if(!config.mstepWarmstart) {
-			Arrays.fill(theta, 0.0);
-		}
-		
 		lineSearch = new WolfRuleLineSearch(new InterpolationPickFirstStep(
-							config.mstepWarmstart ?	prevStepSize : 1.0),
-							1e-4, 0.9, 10);
+				prevStepSize), 1e-4, 0.9, 10);
 		lineSearch.setDebugLevel(0);
 	
 		stopping = new CompositeStopingCriteria();

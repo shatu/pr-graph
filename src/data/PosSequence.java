@@ -13,9 +13,10 @@ public class PosSequence extends AbstractSequence {
 	public void print()
 	{
 		System.out.println(seqID + "\t(" + foldID + ")");
-		for(int i = 0; i < length; i++) 
+		for(int i = 0; i < length; i++) {
 			System.out.print(corpus.index2word.get(tokens[i]) + "[" 
 					+ corpus.index2tag.get(tags[i]) + "]\t");
+		}
 		System.out.println();
 	}
 

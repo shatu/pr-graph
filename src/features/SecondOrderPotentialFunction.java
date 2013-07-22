@@ -58,19 +58,23 @@ public class SecondOrderPotentialFunction
 				int sp = (i == 0 ? S0 : tags[i-1]);
 				int spp = (i == 0 ? S00 : (i == 1 ? S0 : tags[i-2]));
 				
-				if(i > 0)
+				if(i > 0) {
 					emissionFeatureNorm += nodeFeatures[0][toks[i-1]][s].length;
-				if(i < instance.length)
+				}
+				if(i < instance.length) {
 					emissionFeatureNorm += nodeFeatures[1][toks[i]][s].length;
-				if(i < instance.length - 1)
+				}
+				if(i < instance.length - 1) {
 					emissionFeatureNorm += nodeFeatures[2][toks[i+1]][s].length;
-			
+				}
 				transitionFeatureNorm += edgeFeatures[s][sp][spp].length;
 			}
 		}
 		// assign feature values
-		System.out.println(String.format("\nExtracted %d features. #Transiton:\t%d\t#Emission:\t%d", 
-				feature2index.size(), (int) transitionFeatureNorm, (int) emissionFeatureNorm));
+		System.out.println(String.format("\nExtracted %d features." +
+				" #Transiton:\t%d\t#Emission:\t%d", 
+				feature2index.size(), (int) transitionFeatureNorm,
+				(int) emissionFeatureNorm));
 		
 		double scaling = 1.0;
 		if(rescaleFeatures) {
@@ -85,8 +89,9 @@ public class SecondOrderPotentialFunction
 				fill(edgeFeatureVal[i][j][S0], 1.0);
 				fill(edgeFeatureVal[SN][i][j], 1.0);
 				
-				for(int k = 0; k < numTStates; k++)
+				for(int k = 0; k < numTStates; k++) {
 					fill(edgeFeatureVal[i][j][k], 1.0);
+				}
 			}
 		}
 		

@@ -70,10 +70,9 @@ public class SecondOrderEMTrainer {
 		
 		Arrays.fill(empiricalCounts, 0.0);
 		model = new SecondOrderFactorGraph(corpus, potentialFunction, fiter);
-		if(!config.skipLaplacian) {
-			constraint = new SecondOrderTypeEG(corpus, graph, potentialFunction, fiter, config);
-		}
-	
+		constraint = new SecondOrderTypeEG(corpus, graph, potentialFunction,
+				fiter, config);
+		
 		for(int tid = 0; tid < corpus.numInstances; tid++) {
 			AbstractSequence instance = corpus.getInstance(tid);
 			if(instance.isLabeled) {
@@ -89,12 +88,8 @@ public class SecondOrderEMTrainer {
 		System.out.println("Corpus M Step");
 		timer.stamp("mstep-start");
 		
-		if(!config.mstepWarmstart) {
-			Arrays.fill(theta, 0.0);
-		}
-		
-		lineSearch = new WolfRuleLineSearch(new InterpolationPickFirstStep(
-							config.mstepWarmstart ?	prevStepSize : 1.0), 1e-4, 0.9, 10);
+		lineSearch = new WolfRuleLineSearch(
+				new InterpolationPickFirstStep(prevStepSize), 1e-4, 0.9, 10);
 		lineSearch.setDebugLevel(0);
 	
 		stopping = new CompositeStopingCriteria();
@@ -162,12 +157,10 @@ public class SecondOrderEMTrainer {
 		for(currIter = 0; currIter < config.numEMIters && !success; currIter++) {
 			System.out.println("Iteration:: " + currIter);
 			
-			if(!config.skipLaplacian && (currIter > 0 || !config.skipFirstEstep)) {
+			if(currIter > 0) {
 				corpusEStep();		
 				transductive = true;
 			}
-			else if(config.skipLaplacian && currIter > 0)
-				break;	
 			
 			double currObjective = corpusMStep();
 			double currTime = 1e-6 * System.currentTimeMillis();
@@ -263,8 +256,7 @@ public class SecondOrderEMTrainer {
 	}
 
 	
-	public class MStepObjective extends Objective 
-	{
+	public class MStepObjective extends Objective {
 		protected double objective, labelLikelihood, softLikelihood, parameterRegularizer;
 		int nrFeatures;
 		boolean transductive;
@@ -273,8 +265,7 @@ public class SecondOrderEMTrainer {
 		double gpSquared;
 		double[] gradientInit;
 	
-		public MStepObjective(double[] parameters, boolean transductive) 
-		{
+		public MStepObjective(double[] parameters, boolean transductive) {
 			this.nrFeatures = parameters.length;
 			this.transductive = transductive;
 			this.gradient = new double[nrFeatures];		
@@ -284,8 +275,9 @@ public class SecondOrderEMTrainer {
 			
 			for (int i = 0; i < parameters.length; i++) {
 				gradientInit[i] = - config.labelStrength * empiricalCounts[i];
-				if(transductive)
+				if(transductive) {
 					gradientInit[i] -= constraint.softEmpiricalCounts[i];
+				}
 			}
 			this.threads = new SentenceUpdateThread[config.numThreads];
 			this.numThetaUpdates = 0;
@@ -307,7 +299,8 @@ public class SecondOrderEMTrainer {
 			
 			try {
 				for(int i = 0; i < config.numThreads; i++) {
-					threads[i] = new SentenceUpdateThread(i, threads.length, corpus.numInstances);
+					threads[i] = new SentenceUpdateThread(i, threads.length,
+							corpus.numInstances);
 					threads[i].start();
 				}
 				for(int i = 0; i < config.numThreads; i++) {
@@ -315,15 +308,14 @@ public class SecondOrderEMTrainer {
 				}
 			
 				for(int i = 0; i < config.numThreads; i++) {
-					for(int j = 0; j < gradient.length; j++) 
+					for(int j = 0; j < gradient.length; j++) { 
 						gradient[j] += threads[i].localGradient[j];
+					}
 					
 					labelLikelihood += threads[i].localLabelLikelihood;
 					softLikelihood += threads[i].localSoftLikelihood;
-					
 					threads[i] = null;
 				}
-				
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -334,7 +326,8 @@ public class SecondOrderEMTrainer {
 			
 			if(updateCalls % 100 == 0) {
 				System.out.println("iteration:: " + updateCalls);
-				System.out.println("objective:: " + objective + "\tlabeled:: " + labelLikelihood + "\tunlabeled:: " + softLikelihood);
+				System.out.println("objective:: " + objective + "\tlabeled:: " +
+						labelLikelihood + "\tunlabeled:: " + softLikelihood);
 				System.out.println("gradient norm:: " + twoNormSquared(gradient));
 				System.out.println("parameter norm:: " + twoNormSquared(parameters));
 			}
@@ -405,7 +398,8 @@ public class SecondOrderEMTrainer {
 
 	}
 	
-	synchronized void printPredictedIntance(AbstractCorpus corpus, AbstractSequence instance, int[] prediction) {
+	synchronized void printPredictedIntance(AbstractCorpus corpus,
+			AbstractSequence instance, int[] prediction) {
 		for(int i = 0; i < instance.length; i++)
 			System.out.print(corpus.getPrintableWord(instance.tokens[i]) + "\t");
 		System.out.println();
@@ -420,8 +414,7 @@ public class SecondOrderEMTrainer {
 		System.out.println("\n");
 	}
 	
-	private class SentenceMonitorThread extends Thread 
-	{
+	private class SentenceMonitorThread extends Thread {
 		@SuppressWarnings("unused")
 		private final int threadID, startJobID, endJobID;
 		private final int[] jobs;
@@ -455,6 +448,4 @@ public class SecondOrderEMTrainer {
 		}
 		
 	}
-
-
 }

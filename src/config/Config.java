@@ -41,14 +41,8 @@ public class Config {
 	@Option(name = "-num-mstep-iters", usage="")
 	public int numMstepIters = 50;
 	
-	@Option(name = "-skip-laplacian", usage="")
-	public boolean skipLaplacian;
-	
-	@Option(name = "-skip-first-estep", usage="")
-	public boolean skipFirstEstep;
-	
 	@Option(name = "-num-threads", usage="")
-	public int numThreads= 2;
+	public int numThreads= 4;
 	
 	@Option(name = "-em-stop", usage="")
 	public double emStopThreshold = 0.01;
@@ -59,14 +53,8 @@ public class Config {
 	@Option(name = "-mstep-stop", usage="")
 	public double mstepStopThreshold = 1e-5;
 	
-	@Option(name = "-mstep-warmstart", usage="")
-	public boolean mstepWarmstart;
-
-	@Option(name = "-estep-warmstart", usage="")
-	public boolean estepWarmstart;
-	
 	@Option(name = "-eta", usage="")
-	public double initialLearningRate = 1.0;
+	public double initialLearningRate = 0.2;
 
 	@Option(name = "-estep-init", usage="")
 	public double estepInit = 1.0;
@@ -89,8 +77,7 @@ public class Config {
 	public Config() {
 	}
 	
-	public void print(PrintStream ostr)
-	{
+	public void print(PrintStream ostr)	{
 		ostr.println("-data-path\t" + dataPath);
 		ostr.println("-graph-path\t" + graphPath);
 		ostr.println("-output-path\t" + outputPath);
@@ -107,10 +94,6 @@ public class Config {
 		ostr.println("-em-stop-threshold\t" + emStopThreshold);
 		ostr.println("-estep-stop-threshold\t" + estepStopThreshold);
 		ostr.println("-mstep-stop-threshold\t" + mstepStopThreshold);
-		ostr.println("-skip-laplacian\t" + skipLaplacian);
-		ostr.println("-skip-first-estep\t" + skipFirstEstep);
-		ostr.println("-estep-warmstart\t" + estepWarmstart);
-		ostr.println("-mstep-warmstart\t" + mstepWarmstart);
 		ostr.println("-eta0\t" + initialLearningRate);
 		ostr.println("-estep-uniform-init\t" + estepInit);
 		ostr.println("-seed-folder\t" + seedFolder);

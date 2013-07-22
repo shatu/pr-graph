@@ -230,8 +230,7 @@ public class FirstOrderTypeEG {
 				for(int i = 0; i <= length; i++)
 					for(int s : fiter.states(sid, i)) {
 						mstepNodeScore[sid][i][s] = model.nodeScore[i][s];
-						nodeScore[sid][i][s] = config.estepWarmstart ? 
-								mstepNodeScore[sid][i][s] : uniformInit;
+						nodeScore[sid][i][s] = mstepNodeScore[sid][i][s];
 					}
 			}
 			

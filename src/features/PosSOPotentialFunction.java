@@ -2,6 +2,8 @@ package features;
 
 import gnu.trove.TIntIntHashMap;
 import java.util.Arrays;
+import java.util.Locale;
+
 import config.PosConfig;
 import data.PosCorpus;
 import data.RegexHelper;
@@ -16,7 +18,8 @@ public class PosSOPotentialFunction extends SecondOrderPotentialFunction {
 		this.myCorpus = corpus;
 		this.config = config;
 		
-		System.out.println(String.format("Extract features from %d nodes and %d/%d states.", 
+		System.out.println(String.format(
+				"Extract features from %d nodes and %d/%d states.", 
 				numWordTypes, numTStates, numStates));
 		
 		for(int i = 0; i < numTStates; i++) {
@@ -27,8 +30,9 @@ public class PosSOPotentialFunction extends SecondOrderPotentialFunction {
 				extractTransitionFeatures(i, j, S0);
 				extractTransitionFeatures(SN, i, j);
 				
-				for(int k = 0; k < numTStates; k++) 
+				for(int k = 0; k < numTStates; k++) {
 					extractTransitionFeatures(i, j, k);
+				}
 			}
 		}
 		
@@ -44,9 +48,7 @@ public class PosSOPotentialFunction extends SecondOrderPotentialFunction {
 		assignFeatureValues(config.scaleFeatures);
 	}
 	
-
-	private void extractTransitionFeatures(int s, int sp, int spp) 
-	{
+	private void extractTransitionFeatures(int s, int sp, int spp) {
 		String sppTag = myCorpus.getTag(spp);
 		String spTag = myCorpus.getTag(sp);
 		String sTag = myCorpus.getTag(s);
@@ -65,25 +67,23 @@ public class PosSOPotentialFunction extends SecondOrderPotentialFunction {
 		edgeFeatureVal[s][sp][spp] = new double[fv.size()];
 	}
 
-	
-	private void extractEmissionFeatures(int offset, int nid, int s) 
-	{
+	private void extractEmissionFeatures(int offset, int nid, int s) {
 		String tok = myCorpus.getWord(nid);
 		String tag = myCorpus.getTag(s);
 		String prefix = "P" + offset;
+		Locale locale = new Locale(config.langName);
 		
 		TIntIntHashMap fv = new TIntIntHashMap();
-		add(fv, prefix + "Tk=" + tok + " "  + tag, true); // lowercased token
-		add(fv, prefix + "LTk=" + tok.toLowerCase() + " "  + tag, true); // lowercased token
+		add(fv, prefix + "Tk=" + tok + " "  + tag, true);
+		add(fv, prefix + "LTk=" + tok.toLowerCase(locale) + " " + tag, true);
 		
-		if(tok.toUpperCase().charAt(0) == tok.charAt(0)) {
-			add(fv, prefix + "Cap | " + tag, true);  // is capitalized
+		if(tok.toUpperCase(locale).charAt(0) == tok.charAt(0)) {
+			add(fv, prefix + "Cap | " + tag, true);
 		}
 		
 		if(RegexHelper.isNumerical(tok)) {
 			add(fv, prefix + "Dig | " + tag, true);
 		}
-		
 		if(RegexHelper.isPunctuation(tok)) {
 			add(fv, prefix + "Pun | " + tag, true);
 		}
@@ -103,5 +103,4 @@ public class PosSOPotentialFunction extends SecondOrderPotentialFunction {
 		Arrays.sort(nodeFeatures[offset][nid][s]);
 		nodeFeatureVal[offset][nid][s] = new double[fv.size()];
 	}
-	
 }

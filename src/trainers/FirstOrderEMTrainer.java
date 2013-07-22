@@ -66,10 +66,8 @@ public class FirstOrderEMTrainer
 		prevStepSize = 1.0;
 		
 		Arrays.fill(empiricalCounts, 0.0);
-		
-		if(!config.skipLaplacian) {
-			constraint = new FirstOrderTypeEG(corpus, graph, potentialFunction, fiter, config);
-		}
+		constraint = new FirstOrderTypeEG(corpus, graph, potentialFunction,
+				fiter, config);
 		
 		FirstOrderFactorGraph model = new FirstOrderFactorGraph(corpus, potentialFunction, fiter);
 		for (int tid = 0; tid < corpus.numInstances; tid++) {
@@ -87,12 +85,8 @@ public class FirstOrderEMTrainer
 		System.out.println("Corpus M Step");
 		timer.stamp("mstep-start");
 		
-		if(!config.mstepWarmstart) {
-			Arrays.fill(theta, 0.0);
-		}
-		
 		lineSearch = new WolfRuleLineSearch(new InterpolationPickFirstStep(
-							config.mstepWarmstart ?	prevStepSize : 1.0), 1e-4, 0.9, 10);
+				prevStepSize), 1e-4, 0.9, 10);
 		lineSearch.setDebugLevel(0);
 	
 		stopping = new CompositeStopingCriteria();
@@ -162,12 +156,10 @@ public class FirstOrderEMTrainer
 		for(currIter = 0; currIter < config.numEMIters && !success; currIter++) {
 			System.out.println("Iteration:: " + currIter);
 			
-			if(!config.skipLaplacian && (currIter > 0 || !config.skipFirstEstep)) {
+			if(currIter > 0) {
 				corpusEStep();		
 				transductive = true;
 			}
-			else if(config.skipLaplacian && currIter > 0)
-				break;	
 			
 			double currObjective = corpusMStep();
 			double currTime = 1e-3 * System.currentTimeMillis();		
