@@ -29,8 +29,7 @@ public class PosConfig extends Config {
 		}
 	}
 	
-	public void print(PrintStream ostr)
-	{
+	public void print(PrintStream ostr)	{
 		ostr.println("-data-path\t" + dataPath);
 		ostr.println("-graph-path\t" + graphPath);
 		ostr.println("-umap-path\t" + umapPath);
