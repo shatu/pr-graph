@@ -4,7 +4,6 @@ import graph.PosGraphBuilder;
 import java.io.IOException;
 import util.MemoryTracker;
 import config.PosGraphConfig;
-import data.NGramMapper;
 import data.PosCorpus;
 
 public class TestPosGraphBuilder {
@@ -21,8 +20,7 @@ public class TestPosGraphBuilder {
 				config.dataPath + ".train.ulab", 
 				config.dataPath + ".test.ulab"};
 		
-		NGramMapper ngmap = new NGramMapper(config.ngramPath);
-		PosCorpus corpus = new PosCorpus(dataFiles, ngmap, config);
+		PosCorpus corpus = new PosCorpus(dataFiles, null, config);
 		
 		PosGraphBuilder builder = new PosGraphBuilder(corpus, config);
 		builder.buildGraph();

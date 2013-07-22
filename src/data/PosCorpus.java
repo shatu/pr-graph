@@ -68,18 +68,17 @@ public class PosCorpus extends AbstractCorpus {
 				"Number of hidden states: %d\n", instances.size(),
 				index2word.size(), numTokens, index2tag.size()));
 		
-		// Load NGram mapping
-		this.ngrams = ngmap;
-		this.nodeFrequency = new int[ngmap.index2ngram.size()];
-		
-		for(PosSequence instance : instances) {
-			instance.nodes = ngmap.getNodes(this, instance);
-			for(int nid : instance.nodes) {
-				if(nid >= 0) nodeFrequency[nid] ++;
+		if (ngmap != null) {
+			this.ngrams = ngmap;
+			this.nodeFrequency = new int[ngmap.index2ngram.size()];			
+			for (PosSequence instance : instances) {
+				instance.nodes = ngmap.getNodes(this, instance);
+				for (int nid : instance.nodes) {
+					if (nid >= 0) nodeFrequency[nid] ++;
+				}
 			}
+			this.numNodes = ngmap.index2ngram.size();
 		}
-		
-		this.numNodes = ngmap.index2ngram.size();
 	}
 	
 	private void loadTags(String[] files) throws IOException {

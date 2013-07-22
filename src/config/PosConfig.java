@@ -30,8 +30,7 @@ public class PosConfig extends Config {
 	}
 	
 	public void print(PrintStream ostr)	{
-		ostr.println("-data-path\t" + dataPath);
-		ostr.println("-graph-path\t" + graphPath);
+		ostr.println("-ngram-path\t" + ngramPath);
 		ostr.println("-umap-path\t" + umapPath);
 		ostr.println("-lang-name\t" + langName);
 		super.print(ostr);

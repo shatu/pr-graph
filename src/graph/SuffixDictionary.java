@@ -43,8 +43,9 @@ public class SuffixDictionary {
 	}
 	
 	public String getLongestSuffix(String word) {
-		for(int len = word.length()-1; len > 1; len++) {
-			String tempSuf = word.substring(word.length() - len, word.length());
+		int wlen = word.length();
+		for(int len = wlen - 1; len > 1; len--) {
+			String tempSuf = word.substring(wlen - len, wlen);
 			if(contains(tempSuf)) {
 				return tempSuf;
 			}
@@ -65,6 +66,7 @@ public class SuffixDictionary {
 	
 	public static SuffixDictionary fromWiktionaryDumpFile(String fname,
 			String langName) throws IOException{
+		langName = langName.toUpperCase().charAt(0) + langName.substring(1);
 		SuffixDictionary dict = new SuffixDictionary(langName);
 		BufferedReader reader = new BufferedReader(new FileReader(fname));
 		boolean loaded = false;

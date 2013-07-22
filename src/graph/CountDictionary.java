@@ -41,6 +41,14 @@ public class CountDictionary {
 		return sid;
 	}
 	
+	public int update(int sid) {
+		if(sid < 0 || sid >= index2str.size()) {
+			return -1;
+		}
+		index2count.adjustValue(sid, 1);
+		return sid;
+	}
+	
 	public void resetCounts() {
 		for(int k : index2count.keys()) {
 			index2count.put(k, 0);
@@ -58,4 +66,5 @@ public class CountDictionary {
 	public int size() {
 		return index2str.size();
 	}
+
 }

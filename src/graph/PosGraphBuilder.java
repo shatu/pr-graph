@@ -39,6 +39,7 @@ public class PosGraphBuilder {
 	
 	public PosGraphBuilder(PosCorpus corpus, PosGraphConfig config) {
 		this.corpus = corpus;
+		this.config = config;
 		this.ngramSize = config.ngramSize;
 		this.contextSize = config.contextSize;
 		this.numFeatureTemplates = featurePrefixes.length;
@@ -52,7 +53,6 @@ public class PosGraphBuilder {
 	}
 	
 	public void buildGraph() {
-		
 		generateFeatureTemplates();
 		extractNGrams();
 		extractFeatures();
@@ -110,10 +110,10 @@ public class PosGraphBuilder {
 		
 		for(int sid = 0; sid < corpus.numInstances; sid ++) {
 			PosSequence instance = corpus.getInstance(sid);
-			String[] words = getWords(instance.tokens);
-			
+			String[] words = getWords(instance.tokens, ngramSize / 2);
 			for(int i = 0; i < instance.length; i++) {
-				if(RegexHelper.isPunctuation(words[i])) {
+				if(RegexHelper.isPunctuation(corpus.getWord(
+						instance.tokens[i]))) {
 					token2ngram[sid][i] = -1;
 					continue;
 				}
@@ -146,18 +146,17 @@ public class PosGraphBuilder {
 		ngramCounts.resetCounts();
 		for(int sid = 0; sid < corpus.numInstances; sid++) {
 			PosSequence instance = corpus.getInstance(sid);
-			String[] words = getWords(instance.tokens);
+			String[] context = getWords(instance.tokens, contextSize / 2);
 			
 			for(int i = 0; i < instance.length; i++) {
-				if(!RegexHelper.isPunctuation(words[i])) {
-					String ngram = getNGram(words, i);
-					int nid = ngramCounts.update(ngram);
-					if(nid >= 0) { 
-						addFeatures(words, i, nid);
-						++ numNGramOccur;
-						++ ngram2utag[nid][corpus.umap[instance.tags[i]]];
-					}
+				int nid = token2ngram[sid][i];
+				if(nid < 0) {
+					continue;
 				}
+				ngramCounts.update(nid);
+				addFeatures(context, i, nid);
+				++ numNGramOccur;
+				++ ngram2utag[nid][corpus.umap[instance.tags[i]]];
 			}
 		}
 	
@@ -203,12 +202,16 @@ public class PosGraphBuilder {
 		
 		for (int i = 0; i < numFeatureTemplates; i++) {
 			String feat = featurePrefixes[i] + "=";
-			//if (wordFeatureTemplates[i] != null) 
-			for(int j : wordFeatureTemplates[i]) {
-				feat += "_" + words[j + center];
+			if (wordFeatureTemplates[i] != null) { 
+				for (int j : wordFeatureTemplates[i]) {
+					feat += "<W>=" + words[j + center].toLowerCase();
+				}
 			}
-			for(int j : suffixFeatureTemplates[i]) {
-				feat += "_" + suffixDict.getLongestSuffix(words[j + center]);
+			if (suffixFeatureTemplates[i] != null) {
+				for (int j : suffixFeatureTemplates[i]) {
+					feat += "<SF>=" + suffixDict.getLongestSuffix(
+							words[j + center]);
+				}
 			}
 			int fid = featureCounts.addOrUpdate(feat);
 			fv.adjustOrPutValue(fid, 1, 1);
@@ -227,19 +230,17 @@ public class PosGraphBuilder {
 		return ng;
 	}
 	
-	private String[] getWords(int[] words) {
-		int head = (ngramSize - 1) / 2;
-		int tail = ngramSize / 2;
-		String[] wstr = new String[words.length + head + tail];
+	private String[] getWords(int[] words, int padding) {
+		String[] wstr = new String[words.length + padding * 2];
 		int ptr = 0;
 		
-		for(int i = head - 1; i >= 0; i--) {
+		for(int i = padding - 1; i >= 0; i--) {
 			wstr[ptr++] = "<s" + i + ">";
 		}
 		for(int wid : words) {
 			wstr[ptr++] = normalize(corpus.getWord(wid));
 		}
-		for(int i = 0; i < tail; i++) {
+		for(int i = 0; i < padding; i++) {
 			wstr[ptr++] = "</s" + i + ">";
 		}
 		return wstr;
