@@ -3,8 +3,10 @@ package data;
 import gnu.trove.TObjectIntHashMap;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 public class NGramMapper {
@@ -20,7 +22,10 @@ public class NGramMapper {
 		ngramSize = nsize;
 		
 		String currLine;
-		BufferedReader reader = new BufferedReader(new FileReader(ngramIndexPath));
+		//BufferedReader reader = new BufferedReader(new FileReader(ngramIndexPath));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(
+	               //new FileInputStream(corpusFileName), "UTF8"));
+	               new FileInputStream(ngramIndexPath), "LATIN1"));
 		
 		while ((currLine = reader.readLine()) != null) {	
 			String[] info = currLine.trim().split("\t");

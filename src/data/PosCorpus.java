@@ -116,7 +116,6 @@ public class PosCorpus extends AbstractCorpus {
 			String t = info[0].trim();
 			String ut = info[1].trim();
 			if(!tag2index.contains(t) || !utag2index.contains(ut)) continue;
-			
 			umap[tag2index.get(t)] = utag2index.get(ut);
 		}
 		
