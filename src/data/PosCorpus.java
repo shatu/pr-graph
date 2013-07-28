@@ -5,6 +5,8 @@ import gnu.trove.TObjectIntHashMap;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -157,8 +159,11 @@ public class PosCorpus extends AbstractCorpus {
 	protected void loadFromFile(String corpusFileName, int foldID)
 			throws IOException {
 		String currLine;
-		BufferedReader reader = new BufferedReader(new FileReader(corpusFileName));
-		
+		//BufferedReader reader = new BufferedReader(new FileReader(corpusFileName));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(
+ 	               //new FileInputStream(corpusFileName), "UTF8"));
+ 	               new FileInputStream(corpusFileName), "LATIN1"));
+
 		while ((currLine = reader.readLine()) != null) {
 			String[] wordInfo = currLine.trim().split("\t");
 			
