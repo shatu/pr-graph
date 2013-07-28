@@ -14,27 +14,23 @@ import data.PosCorpus;
 import data.SparseSimilarityGraph;
 
 public class TestHighOrderPos {
-
-	static int maxNumNodes = Integer.MAX_VALUE;
-	static int maxNumSampleFolds = 10;
-	
 	private static void resampleTrains(Config config, PosCorpus corpus) {
 		int fsize = config.numLabels;
-		corpus.sampleFromFolderUnsorted(fsize * maxNumSampleFolds,
+		corpus.sampleFromFolderUnsorted(fsize * config.numCVFolds,
 				config.seedFolder, new Random(12345));
 		
 		int[] newTests = new int[corpus.numInstances - fsize];
 		int[] newTrains = new int[fsize];
 		
 		int dsize = 0;
-		for(int i = 0; i < corpus.tests.length; i++) {
+		for (int i = 0; i < corpus.tests.length; i++) {
 			newTests[dsize++] = corpus.tests[i];
 		}
 		
-		for(int k = 0; k < maxNumSampleFolds; k++) {
-			for(int i = 0; i < fsize; i++) {
+		for (int k = 0; k < config.numCVFolds; k++) {
+			for (int i = 0; i < fsize; i++) {
 				int tid = k * fsize + i;
-				if(k == config.sampleFoldID) {
+				if (k == config.sampleFoldID) {
 					newTrains[i] = corpus.trains[tid];
 				}
 				else { 
@@ -58,13 +54,13 @@ public class TestHighOrderPos {
 				config.dataPath + ".train.ulab", 
 				config.dataPath + ".test.ulab"};
 		
-		NGramMapper ngmap = new NGramMapper(config.ngramPath);
+		NGramMapper ngmap = new NGramMapper(config);
 		PosCorpus corpus = new PosCorpus(dataFiles, ngmap, config);
 		resampleTrains(config, corpus);
 
 		SparseSimilarityGraph graph = null;
 		try {
-			graph = new SparseSimilarityGraph(config.graphPath, corpus.numNodes, false);
+			graph = new SparseSimilarityGraph(config.graphPath, corpus.numNodes);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

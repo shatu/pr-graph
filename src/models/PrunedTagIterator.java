@@ -4,16 +4,14 @@ import data.PosCorpus;
 import data.RegexHelper;
 
 public class PrunedTagIterator extends UnconstrainedFactorIterator {
-
 	int numWords, numTags;
 	int[][] allowedTags;
 	int[][] wordIds;
 	int[] SNUM, SPUNC;
 	
-	public PrunedTagIterator(PosCorpus corpus)
-	{
+	public PrunedTagIterator(PosCorpus corpus) {
 		super(corpus);
-		
+
 		numWords = corpus.numWords;
 		numTags = corpus.numTags; // universal pos-tags here
 		allowedTags = new int[numWords][]; 
@@ -21,33 +19,34 @@ public class PrunedTagIterator extends UnconstrainedFactorIterator {
 		SNUM[0] = corpus.lookupTag("NUM");
 		SPUNC = new int[1];
 		SPUNC[0] = corpus.lookupTag(".");
-		System.out.println("num tag:\t" + SNUM[0] + "\tpunctuation tag:\t" + SPUNC[0]);
 		
-		for(int i = 0; i < numWords; i++) { 
+		for (int i = 0; i < numWords; i++) { 
 			String token = corpus.getWord(i);
-			//if(RegexHelper.isNumerical(token))
-			//	allowedTags[i] = SNUM;
-			//else if(RegexHelper.isPunctuation(token))
-			if(RegexHelper.isPunctuation(token))
+			if (RegexHelper.isPunctuation(token)) {
 				allowedTags[i] = SPUNC;
-			else 
+			}
+			else { 
 				allowedTags[i] = S;
+			}
 		}
 		
 		wordIds = new int[corpus.numInstances][];
-		for(int i = 0; i < corpus.numInstances; i++) {
+		for (int i = 0; i < corpus.numInstances; i++) {
 			wordIds[i] = corpus.getInstance(i).tokens;
 		}
 	}
 	
 	@Override
 	public int[] states(int sentenceID, int position) {
-		if(position < 0)
+		if (position < 0) {
 			return position < -1 ? S00 : S0;
-		else if(position < sentenceBoundaries[sentenceID]) 
+		}
+		else if (position < sentenceBoundaries[sentenceID]) { 
 			return allowedTags[wordIds[sentenceID][position]];
-		else 
+		}
+		else { 
 			return SN;
+		}
 	}
 
 }

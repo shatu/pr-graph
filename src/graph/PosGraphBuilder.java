@@ -46,7 +46,7 @@ public class PosGraphBuilder {
 		
 		try {
 			this.suffixDict = SuffixDictionary.fromWiktionaryDumpFile(
-					config.wiktionaryPath, config.langName);
+					config.wiktionaryPath, config.langName, config.encoding);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

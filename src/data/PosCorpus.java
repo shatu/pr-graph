@@ -101,21 +101,21 @@ public class PosCorpus extends AbstractCorpus {
 	
 	private void loadUniversalTagMap(String univTagPath) throws IOException	{
 		utag2index = new TObjectIntHashMap<String>();
-		for(int i = 0; i < UniversalTagSet.tags.length; i++) { 
+		for (int i = 0; i < UniversalTagSet.tags.length; i++) { 
 			utag2index.put(UniversalTagSet.tags[i], i);
 		}
-	
 		umap = new int[index2tag.size()];
 		Arrays.fill(umap, -1);
 	
 		String currLine;
 		BufferedReader reader = new BufferedReader(new FileReader(univTagPath));
-		
 		while ((currLine = reader.readLine()) != null) {	
 			String[] info = currLine.split("\t");
 			String t = info[0].trim();
 			String ut = info[1].trim();
-			if(!tag2index.contains(t) || !utag2index.contains(ut)) continue;
+			if (!tag2index.contains(t) || !utag2index.contains(ut)) {
+				continue;
+			}
 			umap[tag2index.get(t)] = utag2index.get(ut);
 		}
 		
@@ -130,14 +130,12 @@ public class PosCorpus extends AbstractCorpus {
 	private void remapUniversalTags() {
 		tag2index.clear();
 		index2tag.clear();
-		
-		for(int i = 0; i < UniversalTagSet.tags.length; i++) {
+		for (int i = 0; i < UniversalTagSet.tags.length; i++) {
 			String utag = UniversalTagSet.tags[i];
 			tag2index.put(utag, i);
 			index2tag.add(utag);
 		}
-		
-		for(PosSequence instance : instances) {
+		for (PosSequence instance : instances) {
 			for(int i = 0; i < instance.length; i++) {
 				instance.tags[i] = umap[instance.tags[i]];
 			}
@@ -151,27 +149,24 @@ public class PosCorpus extends AbstractCorpus {
 	protected void loadFromFile(String corpusFileName, int foldID)
 			throws IOException {
 		String currLine;
-		//BufferedReader reader = new BufferedReader(new FileReader(corpusFileName));
 		BufferedReader reader = new BufferedReader(new InputStreamReader(
- 	               //new FileInputStream(corpusFileName), "UTF8"));
- 	               new FileInputStream(corpusFileName), "LATIN1"));
+ 	               new FileInputStream(corpusFileName), config.encoding));
 
 		while ((currLine = reader.readLine()) != null) {
 			String[] wordInfo = currLine.trim().split("\t");
-			
 			currLine = reader.readLine();
 			if(currLine == null) break;
 			String[] tagInfo = currLine.trim().split("\t");
 			TIntArrayList words = new TIntArrayList();
 			TIntArrayList tags = new TIntArrayList();
 			
-			for(int i = 0; i < wordInfo.length; i++) {
+			for (int i = 0; i < wordInfo.length; i++) {
 				String token = wordInfo[i].trim();	
 				words.add(map(word2index, index2word, token));
 				tags.add(tag2index.get(tagInfo[i].trim()));
 			}
 		
-			if(words.size() > 0) {
+			if (words.size() > 0) {
 				int seqID = instances.size();
 				PosSequence instance = new PosSequence(this, seqID, foldID, 
 						words.toNativeArray(), tags.toNativeArray());

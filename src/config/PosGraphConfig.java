@@ -15,9 +15,6 @@ public class PosGraphConfig extends PosConfig {
 	@Option(name = "-num-neighbors", usage="")
 	public int numNeighbors = 60;
 	
-	@Option(name = "-ngram-size", usage="")
-	public int ngramSize = 3;
-	
 	@Option(name = "-context-size", usage="")
 	public int contextSize = 5;
 
@@ -25,7 +22,7 @@ public class PosGraphConfig extends PosConfig {
 	public boolean mutualKNN = true;
 
 	@Option(name = "-min-sim", usage="")
-	public double minSimilarity = 0.01;
+	public double minSimilarity = 0.00;
 	
 	public PosGraphConfig(String[] args) {
 		super(args);
@@ -40,7 +37,6 @@ public class PosGraphConfig extends PosConfig {
 
 	public void print(PrintStream ostr) {
 		ostr.println("-wikt-path\t" + wiktionaryPath);
-		ostr.println("-ngram-size\t" + ngramSize);
 		ostr.println("-context-path\t" + contextSize);
 		ostr.println("-mutual\t" + mutualKNN);
 		ostr.println("-min-sim\t" + minSimilarity);

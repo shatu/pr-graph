@@ -16,6 +16,14 @@ public class PosConfig extends Config {
 	@Option(name = "-lang-name", usage="")
 	public String langName = "spanish";
 	
+	// Due to a bug in the code, set the encoding to LATIN1 to recreate
+	// experiment results in the CoNLL'13 paper.
+	@Option(name = "-encoding", usage="")
+	public String encoding = "UTF8";
+
+	@Option(name = "-ngram-size", usage="")
+	public int ngramSize = 3;
+	
 	public PosConfig(String[] args)
 	{
 		super();
@@ -33,6 +41,8 @@ public class PosConfig extends Config {
 		ostr.println("-ngram-path\t" + ngramPath);
 		ostr.println("-umap-path\t" + umapPath);
 		ostr.println("-lang-name\t" + langName);
+		ostr.println("-encoding\t" + encoding);
+		ostr.println("-ngram-size\t" + ngramSize);
 		super.print(ostr);
 	}
 }
