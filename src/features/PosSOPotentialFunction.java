@@ -10,7 +10,6 @@ import data.RegexHelper;
 
 public class PosSOPotentialFunction extends SecondOrderPotentialFunction {
 	private PosCorpus myCorpus;
-	@SuppressWarnings("unused")
 	private PosConfig config;
 	
 	public PosSOPotentialFunction(PosCorpus corpus, PosConfig config) {

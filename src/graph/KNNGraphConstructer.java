@@ -14,16 +14,15 @@ public class KNNGraphConstructer {
 	int numNodes;
 	int numNeighbors;
 	boolean mutualKNN;
-	
 	EdgeList[] edges;
 	String graphPath, ngramPath;
-	
-	int numThreads = 8;
+	int numThreads;
 	double similarityThreshold;
 	
 	public KNNGraphConstructer(CountDictionary ngramCounts, int[][] features,
 			double[][] featureVals, int numNeighbors, boolean mutualKNN,
-			double similarityThreshold, String graphPath, String ngramPath) {
+			double similarityThreshold, String graphPath, String ngramPath,
+			int numThreads) {
 		this.ngramCounts = ngramCounts;
 		this.features = features;
 		this.featureVals = featureVals;		
@@ -31,6 +30,7 @@ public class KNNGraphConstructer {
 		this.numNeighbors = numNeighbors;
 		this.mutualKNN = mutualKNN;
 		this.similarityThreshold = similarityThreshold;
+		this.numThreads = numThreads;
 		
 		this.graphPath = graphPath;
 		this.ngramPath = ngramPath;
@@ -55,11 +55,10 @@ public class KNNGraphConstructer {
 			threads[i] = new EdgeBuilderThread(i, start, end);
 			threads[i].start();
 		}
-		for(int i = 0; i < numThreads; i++) {
+		for (int i = 0; i < numThreads; i++) {
 			try {
 				threads[i].join();
-			} catch (InterruptedException e) { 
-			}
+			} catch (InterruptedException e) { }
 		}
 		symmetrifyAndSaveGraph();
 	}
@@ -77,16 +76,16 @@ public class KNNGraphConstructer {
 			this.start = start;
 			this.end = end;
 			this.finished = false;
-			print("Thread " + id + " processing segment " + start + " to "
+			print("Thread " + id + " processing nodes " + start + " to "
 					+ end + "\n");
 		}
 
 		@Override
 		public void run() {
 			long startTime = System.currentTimeMillis();
-			for(int i = start; i < end; i++) {
-				for(int j = 0; j < numNodes; j++) {
-					if(i != j) {
+			for (int i = start; i < end; i++) {
+				for (int j = 0; j < numNodes; j++) {
+					if (i != j) {
 						double sim = cosineSimilarity(features[i],
 								featureVals[i], features[j], featureVals[j]);
 						if (sim >= similarityThreshold) {
@@ -100,30 +99,27 @@ public class KNNGraphConstructer {
 					long timeElapsedMin = 1 + (System.currentTimeMillis()
 							- startTime) / 60000;
 					long nodesPerMin = offset / timeElapsedMin;
-					long eta = (numNodes - offset) / nodesPerMin;
 					print("\nThread" + id + "\t::" + offset
 							+ " nodes finished, " + (end -start - offset)
-							+ " nodes to go. (" + nodesPerMin
-							+ " nodes per minute, eta: " + eta + ")\n");
+							+ " nodes to go. " + nodesPerMin
+							+ " nodes per minute\n");
 				}
 			}
 		}
 
 		private double cosineSimilarity(int[] k0, double[] v0, int[] k1,
 				double[] v1) {
-			
 			if(k0.length == 0 || k1.length == 0 || k0[0] > k1[k1.length-1] ||
 					k1[0] > k0[k0.length-1]) { 
 				return 0.0;
 			}
-		
 			double sim = 0;
-			for(int i = 0, j = 0; i < k0.length && j < k1.length; ) {
-				if(k0[i] == k1[j]) {
+			for (int i = 0, j = 0; i < k0.length && j < k1.length; ) {
+				if (k0[i] == k1[j]) {
 					sim += v0[i] * v1[j];
 					i ++; j ++;
 				}
-				else if(k0[i] < k1[j]) {
+				else if (k0[i] < k1[j]) {
 					i ++;
 				}
 				else {
@@ -137,16 +133,15 @@ public class KNNGraphConstructer {
 	public void symmetrifyAndSaveGraph()
 			throws UnsupportedEncodingException, FileNotFoundException,
 			IOException  {
-		
-		System.out.println("Symmetrifying Graph ...");
-		for(int i = 0; i < numNodes; i++) {
+		// Symmetrifying Graph
+		for (int i = 0; i < numNodes; i++) {
 			edges[i].freeze();
 		}
 		
 		int nrEdges = 0, nrEmptyNodes = 0;
-		if(!mutualKNN) {
-			for(int i = 0; i < numNodes; i++) {
-				for(Iterator<Edge> itr = edges[i].iterator(); itr.hasNext(); ) {
+		if (!mutualKNN) {
+			for (int i = 0; i < numNodes; i++) {
+				for (Iterator<Edge> itr = edges[i].iterator(); itr.hasNext(); ) {
 					Edge e = itr.next();
 					edges[e.neighbor].symAdd(new Edge(i, e.weight));
 				}
@@ -156,16 +151,16 @@ public class KNNGraphConstructer {
 		double weightNorm = 0;
 		double avgDegree = 0, maxDegree = -1, minDegree = Double.MAX_VALUE;
 		double avgFreqEmpty = 0, avgFreqNonEmpty = 0; 
-		
 		System.out.println("Saving graph to file: " + graphPath);
 		BufferedWriter fout = new BufferedWriter(new FileWriter(graphPath));
 		
 		for (int i = 0; i < numNodes; i++) {
 			int degree = 0;
-			for(Iterator<Edge> itr = edges[i].iterator(); itr.hasNext(); ) {
+			for (Iterator<Edge> itr = edges[i].iterator(); itr.hasNext(); ) {
 				Edge e = itr.next();
-				
-				if(!edges[e.neighbor].contains(i) || e.weight <= 0) continue;
+				if (!edges[e.neighbor].contains(i) || e.weight <= 0) {
+					continue;
+				}
 				++ degree;
 				++ nrEdges;
 				weightNorm += e.weight;
@@ -174,7 +169,7 @@ public class KNNGraphConstructer {
 						e.neighbor + 1, e.weight));
 			}
 			
-			if(degree == 0) {
+			if (degree == 0) {
 				++ nrEmptyNodes;
 			}
 			avgDegree += degree;

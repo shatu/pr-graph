@@ -60,7 +60,7 @@ public class PosGraphBuilder {
 		KNNGraphConstructer ebuilder = new KNNGraphConstructer(
 				ngramCounts, features, featureVals, 
 				config.numNeighbors, config.mutualKNN, config.minSimilarity,
-				config.graphPath, config.ngramPath);
+				config.graphPath, config.ngramPath, config.numThreads);
 		try {
 			ebuilder.run();
 		} catch (Exception e) {

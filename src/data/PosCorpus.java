@@ -14,15 +14,12 @@ import config.PosConfig;
 
 
 public class PosCorpus extends AbstractCorpus {
-	
 	ArrayList<PosSequence> instances;
 	ArrayList<String> index2word; 
 	TObjectIntHashMap<String> word2index;
-
 	ArrayList<String> index2tag;
 	TObjectIntHashMap<String> tag2index;
 	TObjectIntHashMap<String> utag2index;
-	
 	public int[] umap; // tag id to universal tag id
 	public NGramMapper ngrams;
 	PosConfig config;
@@ -30,7 +27,6 @@ public class PosCorpus extends AbstractCorpus {
 	
 	public PosCorpus(String[] corpusFiles, NGramMapper ngmap,
 			PosConfig config) throws NumberFormatException, IOException {
-		
 		this.config = config;
 		RegexHelper.setLanguage(config.langName);
 
@@ -39,7 +35,6 @@ public class PosCorpus extends AbstractCorpus {
 		word2index = new TObjectIntHashMap<String>();
 		index2tag = new ArrayList<String>();
 		tag2index = new TObjectIntHashMap<String>();
-	
 		maxSequenceID = 0;
 		maxSequenceLength = 0;
 		numTokens = 0;
@@ -47,7 +42,7 @@ public class PosCorpus extends AbstractCorpus {
 		loadTags(corpusFiles);
 		loadUniversalTagMap(config.umapPath);
 		
-		for(int i = 0; i < corpusFiles.length; i++) {
+		for (int i = 0; i < corpusFiles.length; i++) {
 			loadFromFile(corpusFiles[i], i);
 		}
 		
@@ -84,8 +79,7 @@ public class PosCorpus extends AbstractCorpus {
 	}
 	
 	private void loadTags(String[] files) throws IOException {
-		
-		for(String corpusFileName : files) {
+		for (String corpusFileName : files) {
 			String currLine;
 			BufferedReader reader = new BufferedReader(new FileReader(
 					corpusFileName));
@@ -97,7 +91,6 @@ public class PosCorpus extends AbstractCorpus {
 				for(String tag : tagInfo) {
 					map(tag2index, index2tag, tag.trim());
 				}
-			
 				reader.readLine(); // skip dependency info
 				reader.readLine(); // skip empty line
 			}
@@ -127,7 +120,7 @@ public class PosCorpus extends AbstractCorpus {
 			umap[tag2index.get(t)] = utag2index.get(ut);
 		}
 		
-		for(int i = 0; i < index2tag.size(); i++) { 
+		for (int i = 0; i < index2tag.size(); i++) { 
 			if(umap[i] < 0) { 
 				umap[i] = utag2index.get("X");
 			}
