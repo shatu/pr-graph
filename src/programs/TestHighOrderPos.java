@@ -14,34 +14,6 @@ import data.PosCorpus;
 import data.SparseSimilarityGraph;
 
 public class TestHighOrderPos {
-	private static void resampleTrains(Config config, PosCorpus corpus) {
-		int fsize = config.numLabels;
-		corpus.sampleFromFolderUnsorted(fsize * config.numCVFolds,
-				config.seedFolder, new Random(12345));
-		
-		int[] newTests = new int[corpus.numInstances - fsize];
-		int[] newTrains = new int[fsize];
-		
-		int dsize = 0;
-		for (int i = 0; i < corpus.tests.length; i++) {
-			newTests[dsize++] = corpus.tests[i];
-		}
-		
-		for (int k = 0; k < config.numCVFolds; k++) {
-			for (int i = 0; i < fsize; i++) {
-				int tid = k * fsize + i;
-				if (k == config.sampleFoldID) {
-					newTrains[i] = corpus.trains[tid];
-				}
-				else { 
-					newTests[dsize++] = corpus.trains[tid];
-				}
-			}
-		}
-		corpus.resetLabels(newTrains, newTests);
-		corpus.printCrossValidationInfo();
-	}
-	
 	public static void main(String[] args)
 			throws NumberFormatException, IOException {
 		PosConfig config = new PosConfig(args);
@@ -56,7 +28,7 @@ public class TestHighOrderPos {
 		
 		NGramMapper ngmap = new NGramMapper(config);
 		PosCorpus corpus = new PosCorpus(dataFiles, ngmap, config);
-		resampleTrains(config, corpus);
+		CrossValidationHelper.resampleTrains(config, corpus);
 
 		SparseSimilarityGraph graph = null;
 		try {
@@ -75,7 +47,6 @@ public class TestHighOrderPos {
 		
 		System.out.print("Training accuracy::\t");
 		trainer.testModel(corpus.trains);
-		
 		System.out.print("Testing accuracy::\t");
 		trainer.testModel(corpus.tests);
 		

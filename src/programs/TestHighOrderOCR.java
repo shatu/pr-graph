@@ -2,10 +2,8 @@ package programs;
 
 import features.OCRSOPotentialFunction;
 import java.io.IOException;
-import java.util.Random;
 import models.AbstractFactorIterator;
 import models.UnconstrainedFactorIterator;
-import config.Config;
 import config.OCRConfig;
 import trainers.SecondOrderEMTrainer;
 import util.MemoryTracker;
@@ -13,34 +11,6 @@ import data.OCRCorpus;
 import data.SparseSimilarityGraph;
 
 public class TestHighOrderOCR {
-	private static void resampleTrains(Config config, OCRCorpus corpus) {
-		int fsize = config.numLabels;
-		corpus.sampleFromFolderUnsorted(fsize * config.numCVFolds,
-				config.seedFolder, new Random(12345));
-		
-		int[] newTests = new int[corpus.numInstances - fsize];
-		int[] newTrains = new int[fsize];
-		
-		int dsize = 0;
-		for (int i = 0; i < corpus.tests.length; i++) {
-			newTests[dsize++] = corpus.tests[i];
-		}
-		
-		for (int k = 0; k < config.numCVFolds; k++) {
-			for (int i = 0; i < fsize; i++) {
-				int tid = k * fsize + i;
-				if (k == config.sampleFoldID) {
-					newTrains[i] = corpus.trains[tid];
-				}
-				else { 
-					newTests[dsize++] = corpus.trains[tid];
-				}
-			}
-		}
-		corpus.resetLabels(newTrains, newTests);
-		corpus.printCrossValidationInfo();
-	}
-	
 	public static void main(String[] args)
 			throws NumberFormatException, IOException {
 		OCRConfig config = new OCRConfig(args);
@@ -50,7 +20,7 @@ public class TestHighOrderOCR {
 		mem.start(); 
 		
 		OCRCorpus corpus = new OCRCorpus(config.dataPath, Integer.MAX_VALUE);
-		resampleTrains(config, corpus);
+		CrossValidationHelper.resampleTrains(config, corpus);
 		
 		SparseSimilarityGraph graph = null;
 		try {
@@ -69,7 +39,6 @@ public class TestHighOrderOCR {
 		
 		System.out.print("Training accuracy::\t");
 		trainer.testModel(corpus.trains);
-		
 		System.out.print("Testing accuracy::\t");
 		trainer.testModel(corpus.tests);
 		
