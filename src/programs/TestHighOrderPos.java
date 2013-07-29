@@ -2,12 +2,11 @@ package programs;
 
 import features.PosSOPotentialFunction;
 import java.io.IOException;
-import java.util.Random;
 import models.AbstractFactorIterator;
 import models.PrunedTagIterator;
-import config.Config;
 import config.PosConfig;
 import trainers.SecondOrderEMTrainer;
+import trainers.SecondOrderEMTrainerLegacy;
 import util.MemoryTracker;
 import data.NGramMapper;
 import data.PosCorpus;
@@ -40,6 +39,7 @@ public class TestHighOrderPos {
 		PosSOPotentialFunction potentialFunction = new PosSOPotentialFunction(
 				corpus, config);
 		AbstractFactorIterator fiter = new PrunedTagIterator(corpus);
+		// FIXME
 		SecondOrderEMTrainer trainer = new SecondOrderEMTrainer(corpus,
 				potentialFunction, graph, fiter, config);
 	

@@ -287,7 +287,8 @@ public class SecondOrderEMTrainer {
 			for (int i = 0; i < gradient.length; i++) {
 				gradient[i] = gradientInit[i] + parameters[i] / gpSquared;
 				labelLikelihood -= parameters[i] * empiricalCounts[i];
-				softLikelihood -= parameters[i] * constraint.softEmpiricalCounts[i];
+				softLikelihood -= parameters[i] *
+						constraint.softEmpiricalCounts[i];
 			}
 			
 			try {
@@ -316,7 +317,7 @@ public class SecondOrderEMTrainer {
 			if (transductive) { 
 				objective += softLikelihood;
 			}
-			if (updateCalls % 100 == 0) {
+			if (updateCalls % 1 == 0) {
 				System.out.println("iteration:: " + updateCalls);
 				System.out.println("objective:: " + objective + "\tlabeled:: " +
 						labelLikelihood + "\tunlabeled:: " + softLikelihood);
@@ -363,7 +364,7 @@ public class SecondOrderEMTrainer {
 				startJobID = myID * batchSize;
 				endJobID = (myID < numThreads - 1 ?
 						startJobID + batchSize : numJobs);
-				
+
 				localGradient = new double[theta.length];
 				model = new SecondOrderFactorGraph(corpus,	potentialFunction,
 						fiter);
