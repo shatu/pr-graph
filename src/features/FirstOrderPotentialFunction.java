@@ -5,9 +5,7 @@ import gnu.trove.TObjectIntHashMap;
 import data.AbstractCorpus;
 import data.AbstractSequence;
 
-public class FirstOrderPotentialFunction {
-
-	
+public class FirstOrderPotentialFunction {	
 	protected AbstractCorpus corpus;
 	protected int[][][] edgeFeatures; // state-id , prev-state
 	protected int[][][][] nodeFeatures; // node-id, state-id

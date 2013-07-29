@@ -7,7 +7,6 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
 public class PosGraphConfig extends PosConfig {
-
 	@Option(name = "-wikt-path", usage="")
 	public String wiktionaryPath =
 		"/home/luheng/Working/pr-graph/data/langs/enwikt-defs-latest-all.tsv";

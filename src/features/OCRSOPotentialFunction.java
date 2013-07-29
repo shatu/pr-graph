@@ -6,7 +6,6 @@ import config.OCRConfig;
 import data.OCRCorpus;
 
 public class OCRSOPotentialFunction extends SecondOrderPotentialFunction {
-
 	OCRCorpus myCorpus;
 	OCRConfig config;
 	

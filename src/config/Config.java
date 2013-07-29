@@ -4,7 +4,6 @@ import java.io.PrintStream;
 import org.kohsuke.args4j.Option;
 
 public class Config {
-
 	@Option(name = "-data-path", usage="")
 	public String dataPath = "./data/letter.data";
 	

@@ -5,7 +5,6 @@ import data.AbstractSequence;
 import data.SparseSimilarityGraph;
 
 public class GraphPropagationTester {
-	
 	private static int getMaxIndex(double[] p) {
 		int maxi = 0;
 		for(int i = 1; i < p.length; i++)
@@ -27,9 +26,7 @@ public class GraphPropagationTester {
 	public static int numIters;
 	public static double stepSize;
 	public static double stoppingCriteria = 1e-3;
-	
 	public static double devsAcc, testsAcc, totalAcc;
-	
 	private static int numFixedNodes, numTrainCovered, numTestCovered,
 		numTestAll, numTestPunct;
 	private static int numNodes, numLabels, numTokens;
@@ -37,11 +34,9 @@ public class GraphPropagationTester {
 	
 	private static AbstractCorpus corpus;
 	private static SparseSimilarityGraph graph;
-	
 	public static double[][][] Q;
 	public static NodeDistribution trains, tests;
 	public static int[] fixed, pred;
-	
 	
 	public static void runPropagation(AbstractCorpus corpus,
 			SparseSimilarityGraph graph) {
@@ -67,35 +62,36 @@ public class GraphPropagationTester {
 		trains.initialize(corpus, corpus.trains);
 		tests.initialize(corpus, corpus.tests);
 		
-		for(int i = 0; i < numNodes; i++) {
-			if(trains.freq[i] > 0) {
+		for (int i = 0; i < numNodes; i++) {
+			if (trains.freq[i] > 0) {
 				fixed[i] = 1;
 				++ numFixedNodes;
 				pred[i] = getMaxIndex(trains.dist[i]);
 				qmax[i] = trains.dist[i][pred[i]];
-				for(int j = 0; j < numLabels; j++) { 
+				for (int j = 0; j < numLabels; j++) { 
 					Q[0][i][j] = Q[1][i][j] = trains.dist[i][j];
 				}
 			}
 			else {
 				fixed[i] = 0;
-				for(int j = 0; j < numLabels; j++) {
+				for (int j = 0; j < numLabels; j++) {
 					Q[0][i][j] = Q[1][i][j] = 1.0 / numLabels;
 				}
 			}
 		}
 			
-		for(int i = 0; i < corpus.numInstances; i++) {
+		for (int i = 0; i < corpus.numInstances; i++) {
 			AbstractSequence instance = corpus.getInstance(i);
 			int numCovered = 0, numPunct = 0;
-			for(int j = 0; j < instance.length; j++) {
-				if(instance.nodes[j] >= 0)
+			for (int j = 0; j < instance.length; j++) {
+				if (instance.nodes[j] >= 0) {
 					++ numCovered;
-				else if(numLabels == 12 && instance.tags[j] == 11) 
+				}
+				else if (numLabels == 12 && instance.tags[j] == 11) { 
 					++ numPunct;
+				}
 			}
-			
-			if(instance.isLabeled) {
+			if (instance.isLabeled) {
 				numTrainCovered += numCovered;
 			}
 			else {
@@ -103,12 +99,10 @@ public class GraphPropagationTester {
 				numTestPunct += numPunct;
 				numTestAll += instance.length;
 			}
-
 			numTokens += instance.length;
 		}
 
 		int numCoveredTokens = numTrainCovered + numTestCovered;
-
 		System.out.println("test covered:\t" + numTestCovered +
 				"\ttest punct:\t" +  numTestPunct + "\t" + "test all:\t"
 				+ numTestAll);
@@ -126,46 +120,43 @@ public class GraphPropagationTester {
 		double prevNonSmoothness = 0;
 		double prevTime = 1.0 * System.currentTimeMillis() / 1000;
 		
-		for(int iter = 0, curr = 0, next = 1; iter < numIters; iter ++,
+		for (int iter = 0, curr = 0, next = 1; iter < numIters; iter ++,
 				curr = 1 - curr, next = 1 - next) {
 			double numTestsCorrect = 0;
 			double nonSmoothness = 0;
 			double eta = stepSize / (1.0 + Math.sqrt(iter));
 			
-			for(int i = 0; i < numNodes; i++) {
-				if(fixed[i] == 0 && graph.edges[i].size() > 0) {
-					for(int j = 0; j < numLabels; j++){
+			for (int i = 0; i < numNodes; i++) {
+				if (fixed[i] == 0 && graph.edges[i].size() > 0) {
+					for (int j = 0; j < numLabels; j++) {
 						Q[next][i][j] = Q[curr][i][j];
 					}
 				}
-				
-				for(int j = 0; j < graph.edges[i].size(); j++) {
+				for (int j = 0; j < graph.edges[i].size(); j++) {
 					int e = graph.edges[i].get(j);
 					double w = graph.weights[i].get(j);
-					if(w > 0) {
-						for(int k = 0; k < numLabels; k++) {
+					if (w > 0) {
+						for (int k = 0; k < numLabels; k++) {
 							double grad = Q[curr][i][k] - Q[curr][e][k];
-							if(fixed[i] == 0) 
+							if (fixed[i] == 0) {
 								Q[next][i][k] -= eta * grad * w;
+							}
 							nonSmoothness += grad * grad * w;
 						}
 					}
 				}
-				
-				if(fixed[i] == 0) {
+				if (fixed[i] == 0) {
 					normalize(Q[next][i]);
 					pred[i] = getMaxIndex(Q[next][i]);
 				}
-				
-				if(tests.freq[i] > 0) {
+				if (tests.freq[i] > 0) {
 					numTestsCorrect += tests.dist[i][pred[i]] * tests.freq[i];
 				}
 			}
-			
 			double smoChange = Math.abs(nonSmoothness - prevNonSmoothness) /
 					prevNonSmoothness; 
 			
-			if(iter % 100 == 0 || iter == numIters - 1 ||
+			if (iter % 100 == 0 || iter == numIters - 1 ||
 					Math.abs(smoChange) < stoppingCriteria) {
 				testsAcc = 100.0 * (numTestPunct + numTestsCorrect) / numTestAll;
 				
@@ -177,19 +168,17 @@ public class GraphPropagationTester {
 						currTime - prevTime));
 				
 				prevTime = currTime;
- 				if(smoChange < stoppingCriteria) {
+ 				if (smoChange < stoppingCriteria) {
  					break;
  				}
 			}
-				
 			prevNonSmoothness = nonSmoothness;
 		}
 	}
 	
-	
-	public static void runPropagation(AbstractCorpus corpus, SparseSimilarityGraph graph, 
-			int maxNumIterations, double stepSize, double stoppingCriteria) 
-	{
+	public static void runPropagation(AbstractCorpus corpus,
+			SparseSimilarityGraph graph, int maxNumIterations, double stepSize,
+			double stoppingCriteria) {
 		GraphPropagationTester.corpus = corpus;
 		GraphPropagationTester.graph = graph;
 		GraphPropagationTester.numIters = maxNumIterations;
@@ -198,7 +187,5 @@ public class GraphPropagationTester {
 		
 		initializeTester();
 		runTester();
-				
 	}
-	
 }

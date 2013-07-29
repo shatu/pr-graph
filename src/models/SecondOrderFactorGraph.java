@@ -5,7 +5,6 @@ import data.AbstractCorpus;
 import data.AbstractSequence;
 import features.SecondOrderPotentialFunction;
 
-
 public class SecondOrderFactorGraph {
 	protected int sequenceID, length, maxLength, numStates, numTStates;
 	public double[][][][] edgeScore;

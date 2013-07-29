@@ -20,9 +20,7 @@ import data.AbstractSequence;
 import data.SparseSimilarityGraph;
 import features.FirstOrderPotentialFunction;
 
-
-public class FirstOrderEMTrainer 
-{
+public class FirstOrderEMTrainer {
 	AbstractCorpus corpus;
 	FirstOrderPotentialFunction potentialFunction;
 	AbstractFactorIterator fiter;
@@ -79,9 +77,7 @@ public class FirstOrderEMTrainer
 		timer = new GeneralTimer();
 	}
 	
-	
-	private double corpusMStep()
-	{
+	private double corpusMStep() {
 		System.out.println("Corpus M Step");
 		timer.stamp("mstep-start");
 		

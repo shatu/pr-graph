@@ -6,7 +6,6 @@ import gnu.trove.TIntIntHashMap;
 import gnu.trove.TObjectIntHashMap;
 
 public class CountDictionary {
-
 	public TObjectIntHashMap<String> str2index;
 	public ArrayList<String> index2str;
 	public TIntIntHashMap index2count;

@@ -6,9 +6,7 @@ import data.AbstractCorpus;
 import data.AbstractSequence;
 import features.FirstOrderPotentialFunction;
 
-
 public class FirstOrderFactorGraph {
-
 	int sequenceID, length, maxLength;//, numStates, numTStates;
 	
 	public double[][][] edgeScore;

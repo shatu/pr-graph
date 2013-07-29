@@ -1,7 +1,6 @@
 package graph;
 
-public class Edge implements Comparable<Object> 
-{
+public class Edge implements Comparable<Object> {
 	public final int neighbor;
 	public final double weight;
 	

@@ -11,7 +11,6 @@ import features.FirstOrderPotentialFunction;
 import gnu.trove.TIntArrayList;
 
 public class FirstOrderTypeEG {
-
 	double[][][] nodeMarginal, nodeScore, mstepNodeScore;
 	double[] theta, primalVars;
 	

@@ -8,7 +8,6 @@ import data.PosCorpus;
 import data.RegexHelper;
 
 public class PosFOPotentialFunction extends FirstOrderPotentialFunction {
-
 	private PosCorpus myCorpus;
 	
 	public PosFOPotentialFunction(PosCorpus corpus, PosConfig config) {

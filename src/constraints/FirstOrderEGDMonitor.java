@@ -6,32 +6,13 @@ import util.ArrayMath;
 import data.AbstractSequence;
 
 public class FirstOrderEGDMonitor {
-
-	/***
-	 *  compute stats during optimization of exponentiate gradient descent
-	 */
-	
-	// accuracy stuff
 	public int numCorrect, numTotal;
-	
-	/**
-	 *  peakness of marginals
-	 *  
-	 *  avgent: averaged entropy over each tokens
-	 *  maxmaxq: max of all max qs
-	 *  minmaxq: min of all max qs
-	 *  avgmaxq: averaged maxq over each tokens
-	 *  avgstd: average standard deviation of q over each tokens
-	 */
-	
 	public double avgent, maxmaxq, minmaxq, avgmaxq, avgstd;
 	public double[] esrange, nsrange;
-	
 	int numStates;
 	AbstractFactorIterator fiter;
 	
-	public FirstOrderEGDMonitor(int numStates, AbstractFactorIterator fiter)
-	{
+	public FirstOrderEGDMonitor(int numStates, AbstractFactorIterator fiter) {
 		numCorrect = 0;
 		numTotal = 0;
 		avgent = avgmaxq = avgstd = 0;
@@ -105,6 +86,5 @@ public class FirstOrderEGDMonitor {
 		}
 		
 		numTotal += length;
-	}
-	
+	}	
 }

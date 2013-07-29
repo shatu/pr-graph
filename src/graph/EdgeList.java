@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.PriorityQueue;
 
-
 public class EdgeList {
 	PriorityQueue<Edge> queue;
 	HashSet<Integer> set;

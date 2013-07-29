@@ -5,7 +5,6 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 
 public class OCRConfig extends Config {
-	
 	public OCRConfig(String[] args) {
 		super();
 		CmdLineParser parser = new CmdLineParser(this);

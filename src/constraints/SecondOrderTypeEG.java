@@ -11,7 +11,6 @@ import features.SecondOrderPotentialFunction;
 import gnu.trove.TIntArrayList;
 
 public class SecondOrderTypeEG {
-
 	double[][][] nodeMarginal, nodeScore, mstepNodeScore;
 	double[] theta, primalVars;
 	

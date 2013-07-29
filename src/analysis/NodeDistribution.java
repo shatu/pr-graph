@@ -6,8 +6,7 @@ import constraints.LatticeHelper;
 import data.AbstractCorpus;
 import data.AbstractSequence;
 
-public class NodeDistribution 
-{
+public class NodeDistribution {
 	public double[][] dist;
 	public int[] freq;
 	
@@ -16,26 +15,25 @@ public class NodeDistribution
 		freq = new int[numNodes];
 	}
 	
-	public void initialize(AbstractCorpus corpus, int[] sids)
-	{
+	public void initialize(AbstractCorpus corpus, int[] sids) {
 		LatticeHelper.deepFill(dist, 0.0);
 		Arrays.fill(freq, 0);
 		
-		for(int sid : sids) {
+		for (int sid : sids) {
 			AbstractSequence instance = corpus.getInstance(sid);
-			for(int i = 0; i < instance.length; i++) {
+			for (int i = 0; i < instance.length; i++) {
 				int nid = instance.nodes[i];
 				int tid = instance.tags[i];
-				if(nid >= 0) {
+				if (nid >= 0) {
 					dist[nid][tid] ++;
 					freq[nid] ++;
 				}
 			}
 		}
-		
-		for(int i = 0; i < dist.length; i++)
-			for(int j = 0; j < dist[i].length; j++)
+		for (int i = 0; i < dist.length; i++) {
+			for (int j = 0; j < dist[i].length; j++) {
 				dist[i][j] /= freq[i];
+			}
+		}
 	}
-	
 }
