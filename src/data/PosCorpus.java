@@ -43,7 +43,7 @@ public class PosCorpus extends AbstractCorpus {
 		loadUniversalTagMap(config.umapPath);
 		
 		for (int i = 0; i < corpusFiles.length; i++) {
-			loadFromFile(corpusFiles[i], i);
+			loadFromCoNLLFile(corpusFiles[i], i);
 		}
 		
 		remapUniversalTags();
@@ -53,7 +53,6 @@ public class PosCorpus extends AbstractCorpus {
 		initialState = map(tag2index, index2tag, "<t0>");
 		initialStateSO = map(tag2index, index2tag, "<t00>");
 		finalState = map(tag2index, index2tag, "</t0>");
-		
 		numStates = index2tag.size(); // plus one initial state 
 		numInstances = instances.size();
 		numNodes = 0; // if not using ngram index
@@ -64,7 +63,6 @@ public class PosCorpus extends AbstractCorpus {
 				"Number of tokens: %d\n" +
 				"Number of hidden states: %d\n", instances.size(),
 				index2word.size(), numTokens, index2tag.size()));
-		
 		if (ngmap != null) {
 			this.ngrams = ngmap;
 			this.nodeFrequency = new int[ngmap.index2ngram.size()];			
@@ -82,8 +80,7 @@ public class PosCorpus extends AbstractCorpus {
 		for (String corpusFileName : files) {
 			String currLine;
 			BufferedReader reader = new BufferedReader(new FileReader(
-					corpusFileName));
-			
+					corpusFileName));	
 			while ((currLine = reader.readLine()) != null) {			
 				currLine = reader.readLine();
 				if(currLine == null) break;
@@ -118,7 +115,6 @@ public class PosCorpus extends AbstractCorpus {
 			}
 			umap[tag2index.get(t)] = utag2index.get(ut);
 		}
-		
 		for (int i = 0; i < index2tag.size(); i++) { 
 			if(umap[i] < 0) { 
 				umap[i] = utag2index.get("X");
@@ -146,12 +142,12 @@ public class PosCorpus extends AbstractCorpus {
 		return instances.get(id);
 	}
 	
+	@Deprecated
 	protected void loadFromFile(String corpusFileName, int foldID)
 			throws IOException {
 		String currLine;
 		BufferedReader reader = new BufferedReader(new InputStreamReader(
  	               new FileInputStream(corpusFileName), config.encoding));
-
 		while ((currLine = reader.readLine()) != null) {
 			String[] wordInfo = currLine.trim().split("\t");
 			currLine = reader.readLine();
@@ -179,7 +175,37 @@ public class PosCorpus extends AbstractCorpus {
 			reader.readLine(); // skip dependency info
 			reader.readLine(); // skip empty line
 		}
- 
+		reader.close();
+	}
+	
+	protected void loadFromCoNLLFile(String corpusFileName, int foldID)
+			throws IOException {
+		String currLine;
+		BufferedReader reader = new BufferedReader(new InputStreamReader(
+ 	               new FileInputStream(corpusFileName), config.encoding));
+		
+		TIntArrayList wordIds = new TIntArrayList();
+		TIntArrayList tagIds = new TIntArrayList();
+		while ((currLine = reader.readLine()) != null) {
+			String[] info = currLine.trim().split("\t");
+			if (info.length < 5) {
+				if (wordIds.size() > 0) {
+					int seqID = instances.size();
+					PosSequence instance = new PosSequence(this, seqID, foldID, 
+							wordIds.toNativeArray(), tagIds.toNativeArray());
+					instances.add(instance);
+					numTokens += instance.length;
+					maxSequenceID = Math.max(maxSequenceID, seqID + 1);
+					maxSequenceLength = Math.max(maxSequenceLength,
+						numTokens + 1);
+					wordIds.clear();
+					tagIds.clear();
+				}
+			} else {
+				wordIds.add(map(word2index, index2word, info[1]));
+				tagIds.add(tag2index.get(info[4].trim()));
+			}
+		}
 		reader.close();
 	}
 

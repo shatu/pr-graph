@@ -40,7 +40,6 @@ public class OCRCorpus extends AbstractCorpus {
 
 		while ((currLine = reader.readLine()) != null) {
 			String[] info = currLine.trim().split("\t");
-			
 			int nodeID = Integer.parseInt(info[0]) - 1;
 			char letter = info[1].charAt(0) ;
 			int nextID = Integer.parseInt(info[2]) - 1;
@@ -48,11 +47,11 @@ public class OCRCorpus extends AbstractCorpus {
 			
 			// this is a quick fix ...
 			int foldID = Integer.parseInt(info[5]);
-			if(foldID == 9) foldID = 1; 
+			if (foldID == 9) foldID = 1; 
 			else foldID = 0;
 			
 			int[] pixels = new int[info.length - 6];
-			for(int i = 6; i < info.length; i++) {
+			for (int i = 6; i < info.length; i++) {
 				pixels[i-6] = info[i].charAt(0) - '0';
 			}
 			index2word.add(pixels);
@@ -61,20 +60,18 @@ public class OCRCorpus extends AbstractCorpus {
 
 			ocrword += letter;
 			
-			if(nextID < 0) {
+			if (nextID < 0) {
 				instances.add(new OCRSequence(this, seqID, foldID,
 						nodes.toNativeArray(), tags.toNativeArray()));
 				maxSequenceID = Math.max(maxSequenceID, seqID + 1);
-				maxSequenceLength = Math.max(maxSequenceLength, nodes.size() + 1);
-				
-				if(nodes.size() >= maxNumNodes) {
+				maxSequenceLength = Math.max(maxSequenceLength,
+						nodes.size() + 1);
+				if (nodes.size() >= maxNumNodes) {
 					break;
 				}
-				
 				nodes.clear();
 				tags.clear();
-
-				if(foldID == 0) {
+				if (foldID == 0) {
 					addToWordPool(ocrword, seqID);
 				}
 
@@ -145,18 +142,16 @@ public class OCRCorpus extends AbstractCorpus {
 			Random sampler) {
         TIntArrayList trainIds = new TIntArrayList();
         TIntArrayList testIds = new TIntArrayList();
-
         boolean[][] sampled = new boolean[wordPool.length][wordPool[0].length];
-        for(int i = 0; i < sampled.length; i++) {
+        for (int i = 0; i < sampled.length; i++) {
 			for(int j = 0; j < sampled[i].length; j++) {
 	            sampled[i][j] = false;
 			}
         }
 
         int pidx, sidx, currPool = 0;
-
-        while(trainIds.size() < numLabels) {
-            while(sampled[currPool][pidx = sampler
+        while (trainIds.size() < numLabels) {
+            while (sampled[currPool][pidx = sampler
             		.nextInt(wordPoolSize[currPool])]) {
             	// Do nothing
             }
@@ -166,8 +161,8 @@ public class OCRCorpus extends AbstractCorpus {
 			currPool = (currPool + 1) % ocrword2index.size();
         }
 
-        for(int i = 0; i < numInstances; i++) {
-            if(!getInstance(i).isLabeled) {
+        for (int i = 0; i < numInstances; i++) {
+            if (!getInstance(i).isLabeled) {
                 testIds.add(i);
             }
         }

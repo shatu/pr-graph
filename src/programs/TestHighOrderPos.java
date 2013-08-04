@@ -6,7 +6,6 @@ import models.AbstractFactorIterator;
 import models.PrunedTagIterator;
 import config.PosConfig;
 import trainers.SecondOrderEMTrainer;
-import trainers.SecondOrderEMTrainerLegacy;
 import util.MemoryTracker;
 import data.NGramMapper;
 import data.PosCorpus;
@@ -21,9 +20,7 @@ public class TestHighOrderPos {
 		MemoryTracker mem  = new MemoryTracker();
 		mem.start(); 
 		
-		String[] dataFiles = new String[] {
-				config.dataPath + ".train.ulab", 
-				config.dataPath + ".test.ulab"};
+		String[] dataFiles = config.dataPath.split(",");
 		
 		NGramMapper ngmap = new NGramMapper(config);
 		PosCorpus corpus = new PosCorpus(dataFiles, ngmap, config);
@@ -39,7 +36,6 @@ public class TestHighOrderPos {
 		PosSOPotentialFunction potentialFunction = new PosSOPotentialFunction(
 				corpus, config);
 		AbstractFactorIterator fiter = new PrunedTagIterator(corpus);
-		// FIXME
 		SecondOrderEMTrainer trainer = new SecondOrderEMTrainer(corpus,
 				potentialFunction, graph, fiter, config);
 	

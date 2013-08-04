@@ -9,7 +9,7 @@ sfid=0
 lbs=100
 
 java -cp $CLASSPATH -Xmx6000m programs.TestHighOrderPos -num-labels $lbs \
--data-path "$WDIR/data/langs/$lang/$lname" \
+-data-path "$WDIR/data/langs/$lang/$lname.train,$WDIR/data/langs/$lang/$lname.test" \
 -umap-path "$WDIR/data/univmap/$lang-$umap.map" \
 -ngram-path "$WDIR/data/graph/temp-$lang-60nn.idx" \
 -lang-name "$lname" \
