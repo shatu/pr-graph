@@ -6,7 +6,7 @@ lname=$2
 umap=$3
 
 java -cp $CLASSPATH -Xmx8000m programs.TestPosGraphBuilder  \
--data-path "$WDIR/data/langs/$lang/$lname" \
+-data-path "$WDIR/data/langs/$lang/$lname.train,$WDIR/data/langs/$lang/$lname.test" \
 -umap-path "$WDIR/data/univmap/$lang-$umap.map" \
 -ngram-path "$WDIR/data/graph/temp-$lang-60nn.idx" \
 -lang-name "$lname" \

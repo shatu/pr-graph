@@ -32,6 +32,7 @@ public class PosConfig extends Config {
 		
 		try {
 			parser.parseArgument(args);
+			langName = langName.toLowerCase();
 		} catch (CmdLineException e) {
 			e.printStackTrace();
 		}

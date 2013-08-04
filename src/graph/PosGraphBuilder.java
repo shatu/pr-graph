@@ -45,8 +45,8 @@ public class PosGraphBuilder {
 		this.numFeatureTemplates = featurePrefixes.length;
 		
 		try {
-			this.suffixDict = SuffixDictionary.fromWiktionaryDumpFile(
-					config.wiktionaryPath, config.langName, config.encoding);
+			this.suffixDict = SuffixDictionary.fromSuffixFile(
+					config.suffixPath, config.langName, config.encoding);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -16,10 +16,7 @@ public class TestPosGraphBuilder {
 		MemoryTracker mem  = new MemoryTracker();
 		mem.start(); 
 		
-		String[] dataFiles = new String[] {
-				config.dataPath + ".train.ulab",
-				config.dataPath + ".test.ulab"};
-		
+		String[] dataFiles = config.dataPath.split(",");
 		PosCorpus corpus = new PosCorpus(dataFiles, null, config);
 		PosGraphBuilder builder = new PosGraphBuilder(corpus, config);
 		builder.buildGraph();

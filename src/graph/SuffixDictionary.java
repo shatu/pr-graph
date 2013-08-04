@@ -8,6 +8,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import data.PosSequence;
+
 public class SuffixDictionary {
 	String langName;
 	public CountDictionary suffixAlphabet;
@@ -66,6 +68,7 @@ public class SuffixDictionary {
 		return sufs.toArray(new String[0]);
 	}
 	
+	@Deprecated
 	public static SuffixDictionary fromWiktionaryDumpFile(String fileName,
 			String langName, String encoding) throws IOException {
 		langName = langName.toUpperCase().charAt(0) + langName.substring(1);
@@ -102,5 +105,21 @@ public class SuffixDictionary {
 		return dict;
 	}
 	
-
+	// Each line contains two tab delimited strings:
+	// <language_name>\t<suffix>
+	public static SuffixDictionary fromSuffixFile(String fileName,
+			String langName, String encoding) throws IOException {
+		SuffixDictionary dict = new SuffixDictionary(langName);
+		BufferedReader reader = new BufferedReader(new InputStreamReader(
+	               new FileInputStream(fileName), encoding));
+		String currLine;
+		while ((currLine = reader.readLine()) != null) {
+			String[] info = currLine.trim().split("\t");
+			if (info.length == 2 && info[0].equalsIgnoreCase(langName)) {
+				dict.addToDict(info[1]);
+			}
+		}
+		reader.close();
+		return dict;
+	}
 }

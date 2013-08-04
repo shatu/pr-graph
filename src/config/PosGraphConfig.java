@@ -7,9 +7,8 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
 public class PosGraphConfig extends PosConfig {
-	@Option(name = "-wikt-path", usage="")
-	public String wiktionaryPath =
-		"/home/luheng/Working/pr-graph/data/langs/enwikt-defs-latest-all.tsv";
+	@Option(name = "-suffix-path", usage="")
+	public String suffixPath = "/home/luheng/Working/pr-graph/data/suffix.dict";
 	
 	@Option(name = "-num-neighbors", usage="")
 	public int numNeighbors = 60;
@@ -35,7 +34,7 @@ public class PosGraphConfig extends PosConfig {
 	}
 
 	public void print(PrintStream ostr) {
-		ostr.println("-wikt-path\t" + wiktionaryPath);
+		ostr.println("-suffix-path\t" + suffixPath);
 		ostr.println("-context-path\t" + contextSize);
 		ostr.println("-mutual\t" + mutualKNN);
 		ostr.println("-min-sim\t" + minSimilarity);

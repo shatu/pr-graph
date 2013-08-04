@@ -317,7 +317,7 @@ public class SecondOrderEMTrainer {
 			if (transductive) { 
 				objective += softLikelihood;
 			}
-			if (updateCalls % 1 == 0) {
+			if (updateCalls % 100 == 0) {
 				System.out.println("iteration:: " + updateCalls);
 				System.out.println("objective:: " + objective + "\tlabeled:: " +
 						labelLikelihood + "\tunlabeled:: " + softLikelihood);
@@ -394,7 +394,6 @@ public class SecondOrderEMTrainer {
 				}
 			}
 		}
-
 	}
 	
 	synchronized void printPredictedIntance(AbstractCorpus corpus,
@@ -427,7 +426,8 @@ public class SecondOrderEMTrainer {
 			startJobID = threadID * batchSize;
 			endJobID = (threadID < numThreads - 1 ?
 					startJobID + batchSize :jobs.length);
-			model = new SecondOrderFactorGraph(corpus,	potentialFunction, fiter);
+			model = new SecondOrderFactorGraph(corpus,	potentialFunction,
+					fiter);
 		}
 		
 		public void run() {
