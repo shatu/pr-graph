@@ -15,19 +15,13 @@ public class EdgeList {
 		this.maxLength = maxLength;
 	}
 	
-	public EdgeList()
-	{
-		this(50);
-	}
-	
 	public void freeze() {
-		for(Iterator<Edge> itr = queue.iterator(); itr.hasNext(); ) {
+		for (Iterator<Edge> itr = queue.iterator(); itr.hasNext(); ) {
 			set.add(itr.next().neighbor);
 		}
 	}
 	
-	public boolean contains(int neighbor)
-	{
+	public boolean contains(int neighbor) {
 		return set != null && set.contains(neighbor);
 	}
 	
@@ -42,7 +36,7 @@ public class EdgeList {
 	}
 	
 	public void symAdd(Edge e) {
-		if(!set.contains(e.neighbor)) {
+		if (!set.contains(e.neighbor)) {
 			queue.add(e);
 			set.add(e.neighbor);
 		}
