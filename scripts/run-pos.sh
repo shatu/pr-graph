@@ -8,7 +8,7 @@ gstr=1
 sfid=0
 lbs=100
 
-java -cp $CLASSPATH -Xmx6000m programs.TestHighOrderPos -num-labels $lbs \
+java -cp $CLASSPATH -Xmx8000m programs.TestHighOrderPos -num-labels $lbs \
 -data-path "$WDIR/data/langs/$lang/$lname.train,$WDIR/data/langs/$lang/$lname.test" \
 -umap-path "$WDIR/data/univmap/$lang-$umap.map" \
 -ngram-path "$WDIR/data/graph/temp-$lang-60nn.idx" \
@@ -25,7 +25,7 @@ java -cp $CLASSPATH -Xmx6000m programs.TestHighOrderPos -num-labels $lbs \
 -estep-stop 0.01 \
 -mstep-stop 0.00001 \
 -num-em-iters 20 \
--num-threads 8 \
+-num-threads 2 \
 -output-path "./output/$lang-f$sfid-100lb-gstr$gstr" \
 -encoding "LATIN1" 
 

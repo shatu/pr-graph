@@ -63,6 +63,7 @@ public class PosCorpus extends AbstractCorpus {
 				"Number of tokens: %d\n" +
 				"Number of hidden states: %d\n", instances.size(),
 				index2word.size(), numTokens, index2tag.size()));
+		
 		if (ngmap != null) {
 			this.ngrams = ngmap;
 			this.nodeFrequency = new int[ngmap.index2ngram.size()];			
@@ -170,7 +171,8 @@ public class PosCorpus extends AbstractCorpus {
 				numTokens += instance.length;
 				
 				maxSequenceID = Math.max(maxSequenceID, seqID + 1);
-				maxSequenceLength = Math.max(maxSequenceLength, words.size() + 1);
+				maxSequenceLength = Math.max(maxSequenceLength,
+						words.size() + 1);
 			}
 			reader.readLine(); // skip dependency info
 			reader.readLine(); // skip empty line
@@ -197,7 +199,7 @@ public class PosCorpus extends AbstractCorpus {
 					numTokens += instance.length;
 					maxSequenceID = Math.max(maxSequenceID, seqID + 1);
 					maxSequenceLength = Math.max(maxSequenceLength,
-						numTokens + 1);
+						instance.length + 1);
 					wordIds.clear();
 					tagIds.clear();
 				}
