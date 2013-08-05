@@ -64,8 +64,8 @@ public class Config {
 	@Option(name = "-scale-features", usage="")
 	public boolean scaleFeatures;
 	
-	@Option(name = "-cv-folds", usage="")
-	public int numCVFolds = 10;
+	@Option(name = "-num-sample-folds", usage="")
+	public int numSampleFolds = 10;
 	
 	@Option(name = "-sample-fold", usage="")
 	public int sampleFoldID = 0; 
@@ -97,7 +97,7 @@ public class Config {
 		ostr.println("-estep-uniform-init\t" + estepInit);
 		ostr.println("-seed-folder\t" + seedFolder);
 		ostr.println("-scale-features\t" + scaleFeatures);
-		ostr.println("-num-cv-folds\t" + numCVFolds);
+		ostr.println("-num-cv-folds\t" + numSampleFolds);
 		ostr.println("-sample-fold-id\t" + sampleFoldID);
 		ostr.println("-random-seed\t" + randomSeed);
 	}

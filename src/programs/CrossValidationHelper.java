@@ -8,7 +8,7 @@ import data.AbstractCorpus;
 public class CrossValidationHelper {
 	public static void resampleTrains(Config config, AbstractCorpus corpus) {
 		int fsize = config.numLabels;
-		corpus.sampleFromFolderUnsorted(fsize * config.numCVFolds,
+		corpus.sampleFromFolderUnsorted(fsize * config.numSampleFolds,
 				config.seedFolder, new Random(config.randomSeed));
 		
 		int[] newTests = new int[corpus.numInstances - fsize];
@@ -19,7 +19,7 @@ public class CrossValidationHelper {
 			newTests[dsize++] = corpus.tests[i];
 		}
 		
-		for (int k = 0; k < config.numCVFolds; k++) {
+		for (int k = 0; k < config.numSampleFolds; k++) {
 			for (int i = 0; i < fsize; i++) {
 				int tid = k * fsize + i;
 				if (k == config.sampleFoldID) {
