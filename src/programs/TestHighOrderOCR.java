@@ -20,7 +20,7 @@ public class TestHighOrderOCR {
 		mem.start(); 
 		
 		OCRCorpus corpus = new OCRCorpus(config.dataPath, Integer.MAX_VALUE);
-		CrossValidationHelper.resampleTrains(config, corpus);
+		RandomSampingHelper.resampleTrains(config, corpus);
 		
 		SparseSimilarityGraph graph = null;
 		try {

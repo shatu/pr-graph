@@ -5,7 +5,7 @@ import java.util.Random;
 import config.Config;
 import data.AbstractCorpus;
 
-public class CrossValidationHelper {
+public class RandomSampingHelper {
 	public static void resampleTrains(Config config, AbstractCorpus corpus) {
 		int fsize = config.numLabels;
 		corpus.sampleFromFolderUnsorted(fsize * config.numSampleFolds,

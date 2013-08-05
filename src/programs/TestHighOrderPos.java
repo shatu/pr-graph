@@ -24,7 +24,7 @@ public class TestHighOrderPos {
 		
 		NGramMapper ngmap = new NGramMapper(config);
 		PosCorpus corpus = new PosCorpus(dataFiles, ngmap, config);
-		CrossValidationHelper.resampleTrains(config, corpus);
+		RandomSampingHelper.resampleTrains(config, corpus);
 
 		SparseSimilarityGraph graph = null;
 		try {
