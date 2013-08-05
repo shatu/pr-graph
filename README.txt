@@ -69,8 +69,12 @@ config.PosConfig and config.PosGraphConfig.
 2b. Handwriting Letters Graph
 -----------------------
 The code for building OCR Graph lives in another project (due to its dependency 
-on FastEMD code) and will be uploaded soon. Right now we can use the graph file 
-in //data/graph to run the experiments.
+on the FastEMD code). The code is under //pr-graph/supplementary.
+We can also use the graph file in //pr-graph/data/graph to run the experiments.
+
+The FastEMD code and its Java wrapper is written by Ofir Pele:
+(O. Pele and M. Werman.
+2009. Fast and Robust Earth Mover’s Distances. In Proc. ICCV)
 
 -------------------------
 3. Running
