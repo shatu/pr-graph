@@ -28,6 +28,9 @@ Contents
 The build.xml is included in the repository.
 Use Ant (http://ant.apache.org/) to compile the project.
 
+From the base directory of this project, run "ant build" to compile the code.
+You can also run "ant clean" to remove compiled files and start over.
+
 ---------------------------------
 2. Graph Buiding
 --------------------------------
@@ -75,6 +78,23 @@ We can also use the graph file in //pr-graph/data/graph to run the experiments.
 The FastEMD code and its Java wrapper is written by Ofir Pele:
 (O. Pele and M. Werman.
 2009. Fast and Robust Earth Mover’s Distances. In Proc. ICCV)
+
+To run the OCR graph builder, we can do:
+
+1). Extract the package ocr-graph-builder.tar.gz
+2). In the file ocr-graph/src/ emd_hat.java:
+      In Line 119, update the path of the emd tool library:
+        System.load("/$YOUR_WORKING_PATH/ocr-graph/libs/libemd_hat_native.so");
+3). From the base directory ocr-graph, run:
+      ant build
+    to compile.
+4). Run:
+
+export WDIR="your working directory"
+export DDIR="your data directory"
+export CLASSPATH="$WDIR/bin/:$WDIR/libs/trove-2.0.2.jar:$WDIR/libs/args4j-2.0.10.jar:$WDIR/libs/libemd_hat_native.so"
+
+java -cp $CLASSPATH -Xmx8000m OcrGraphBuilder -data-path "$DDIR/letter.data"
 
 -------------------------
 3. Running
