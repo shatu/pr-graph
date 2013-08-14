@@ -6,7 +6,7 @@ This Javaproject implements the Graph-based Posterior Regularization model
 described in the following paper:
 
 Graph-Based Posterior Regularization for Semi-Supervised Structured Prediction
-Luheng He, Jennifer Gillenwater, and Ben Taskar. 
+Luheng He, Jennifer Gillenwater, and Ben Taskar.
 Conference on Computational Natural Language Learning (CoNLL), 2013.
 
 ----------------
@@ -53,8 +53,8 @@ export DDIR=”your data directory”
 export CLASSPATH="$WDIR/bin/:$WDIR/libs/optimization-2010.11.jar:$WDIR/libs/trove-2.0.2.jar:$WDIR/libs/args4j-2.0.10.jar"
 
 java -cp $CLASSPATH -Xmx8000m programs.TestPosGraphBuilder  \
--data-path "DDIR/lang.train,$DDIR/lang.test" \ # a list of comma-delimited input file paths
--sufix-path “DDIR/suffix.dict”
+-data-path "$DDIR/lang.train,$DDIR/lang.test" \ # a list of comma-delimited input file paths
+-sufix-path “$DDIR/suffix.dict”
 -umap-path "$DDIR/lang.map" \
 -graph-path "$DDIR/graph/lang.grph" \ 
 -ngram-path "$DDIR/graph/$lang.idx" \ 
@@ -97,7 +97,7 @@ java -cp $CLASSPATH -Xmx8000m programs.TestHighOrderPos -num-labels 100 \
 -umap-path "lang.map" \
 -ngram-path "lang-graph.idx" \
 -graph-path "lang-graph.grph" \
--lang-name "lang" \
+-lang-name "lang" 
 -sample-fold 0 \
 -num-sample-folds 10 \
 -eta 0.2 \
